@@ -1,10 +1,68 @@
 {
   "name": "solaire",
   "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "The grossly incandescent procedural generation framework",
+  "main": "dist/solaire.js",
+  "jsnext:main": "dist/solaire.module.js",
+  "module": "dist/solaire.module.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "procedural-generation",
+    "game-development"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint src test",
+    "test": "karma start --single-run --browsers PhantomJS",
+    "clean": "rimraf build dist",
+    "build": "rollup --config",
+    "report-coverage": "cat ./build/coverage/lcov.info | codecov",
+    "commitmsg": "validate-commit-msg",
+    "release": "standard-version"
+  },
+  "config": {
+    "validate-commit-msg": {
+      "helpMessage": "See README for guidelines",
+      "autoFix": true
+    }
+  },
+  "engines": {
+    "node": "6.x",
+    "npm": "3.x"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.18.0",
+    "babel-preset-es2015": "^6.24.1",
+    "codecov.io": "^0.1.6",
+    "eslint": "^3.19.0",
+    "eslint-plugin-jasmine": "^2.7.1",
+    "husky": "^0.13.4",
+    "jasmine": "^2.6.0",
+    "jasmine-core": "^2.6.4",
+    "karma": "^1.7.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-rollup-preprocessor": "^3.0.3",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-spec-reporter": "0.0.26",
+    "rimraf": "^2.6.1",
+    "rollup": "^0.40.0",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^7.0.0",
+    "rollup-plugin-istanbul": "^1.1.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "standard-version": "^4.2.0",
+    "validate-commit-msg": "^2.12.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsalis/solaire.git"
   },
   "author": "jsalis <johnsalis@live.com>",
   "license": "MIT"
