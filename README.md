@@ -1,0 +1,5 @@
+# solaire
+
+## License
+
+MIT
