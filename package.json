@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "lint": "eslint src test",
-    "test": "karma start --single-run --browsers PhantomJS",
+    "test": "karma start --single-run --browsers ChromeHeadless",
     "clean": "rimraf build dist",
     "build": "rollup --config",
     "report-coverage": "cat ./build/coverage/lcov.info | codecov",
@@ -47,7 +47,6 @@
     "karma-coverage": "^1.1.1",
     "karma-firefox-launcher": "^1.0.1",
     "karma-jasmine": "^1.1.0",
-    "karma-phantomjs-launcher": "^1.0.4",
     "karma-rollup-preprocessor": "^3.0.3",
     "karma-safari-launcher": "^1.0.0",
     "karma-spec-reporter": "0.0.26",
