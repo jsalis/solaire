@@ -1,2 +1,2 @@
 
-export default {};
+export { default as World } from './world';

@@ -57,7 +57,6 @@
     "no-new-object": 2,
     "no-new-wrappers": 2,
     "no-redeclare": 2,
-    "no-restricted-syntax": [2, "ClassBody", "ForOfStatement"],
     "no-script-url": 2,
     "no-self-compare": 2,
     "no-sequences": 2,
