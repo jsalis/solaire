@@ -1,6 +1,9 @@
 
-export default { create: createRegion };
-
+/**
+ * Creates a new region object.
+ *
+ * @returns {Object}
+ */
 function createRegion() {
 
 	return {
@@ -8,3 +11,5 @@ function createRegion() {
 		// TODO
 	};
 }
+
+export default { create: createRegion };

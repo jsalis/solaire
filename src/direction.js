@@ -6,23 +6,23 @@ export default class Direction {
 
 	/**
 	 * @constructor
-	 * @param {Number} row  The row direction.
-	 * @param {Number} col  The column direction.
+	 * @param {Number} x    The x direction.
+	 * @param {Number} y    The y direction.
 	 */
-	constructor(row, col) {
+	constructor(x, y) {
 
-		this.row = row;
-		this.col = col;
+		this.x = x;
+		this.y = y;
 	}
 
-	get y() {
+	get col() {
 
-		return this.row;
+		return this.x;
 	}
 
-	get x() {
+	get row() {
 
-		return this.col;
+		return this.y;
 	}
 }
 
@@ -31,16 +31,16 @@ Direction.ORIGIN = {
 };
 
 Direction.CARDINALS = {
-	N: new Direction(-1, 0),
-	E: new Direction(0, 1),
-	S: new Direction(1, 0),
-	W: new Direction(0, -1),
+	N: new Direction(0, -1),
+	E: new Direction(1, 0),
+	S: new Direction(0, 1),
+	W: new Direction(-1, 0),
 };
 
 Direction.ORDINALS = {
-	NE: new Direction(-1, 1),
+	NE: new Direction(1, -1),
 	SE: new Direction(1, 1),
-	SW: new Direction(1, -1),
+	SW: new Direction(-1, 1),
 	NW: new Direction(-1, -1)
 };
 

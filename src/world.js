@@ -1,15 +1,35 @@
 
+import merge from 'merge';
+import clamp from 'clamp';
+
+import * as vec2 from './math/vec2';
 import Direction from './direction';
 import Region from './region';
 
-export default { create: createWorld };
+/**
+ * @type {Object} The default world config.
+ */
+const DEFAULT_CONFIG = {
 
-function createWorld() {
+	bounds: {
+		min: { x: -Infinity, y: -Infinity },
+		max: { x: Infinity, y: Infinity }
+	}
+};
 
+/**
+ * Creates a new world object.
+ *
+ * @param   {Object} config
+ * @returns {Object}
+ */
+function createWorld(config) {
+
+	let { bounds } = merge.recursive(true, DEFAULT_CONFIG, config);
+	let position = { x: 0, y: 0 };
 	let data = {};
-	let current = { row: 0, col: 0 };
 
-	initialize(data, current);
+	initialize(data, position, bounds);
 
 	return {
 
@@ -20,10 +40,12 @@ function createWorld() {
 
 		get position() {
 
-			return {
-				row: current.row,
-				col: current.col
-			};
+			return vec2.clone(position);
+		},
+
+		region(pos) {
+
+			return data[ pos.x ] && data[ pos.x ][ pos.y ];
 		},
 
 		generate() {
@@ -33,41 +55,59 @@ function createWorld() {
 
 		move(dir) {
 
-			current.row += dir.row;
-			current.col += dir.col;
-			initialize(data, current);
+			return new Promise((resolve, reject) => {
+
+				let current = vec2.clone(position);
+
+				position.x = clamp(position.x + dir.x, bounds.min.x, bounds.max.x);
+				position.y = clamp(position.y + dir.y, bounds.min.y, bounds.max.y);
+				initialize(data, position, bounds);
+
+				if (vec2.equals(position, current)) {
+
+					reject(new Error('World position out of bounds'));
+
+				} else {
+
+					resolve();
+				}
+			});
 		},
 
 		moveNorth() {
 
-			this.move(Direction.CARDINALS.N);
+			return this.move(Direction.CARDINALS.N);
 		},
 
 		moveEast() {
 
-			this.move(Direction.CARDINALS.E);
+			return this.move(Direction.CARDINALS.E);
 		},
 
 		moveSouth() {
 
-			this.move(Direction.CARDINALS.S);
+			return this.move(Direction.CARDINALS.S);
 		},
 
 		moveWest() {
 
-			this.move(Direction.CARDINALS.W);
+			return this.move(Direction.CARDINALS.W);
 		}
 	};
 }
 
-function initialize(data, pos) {
+function initialize(data, center, bounds) {
 
 	Object.values(Direction.NEIGHBORS).forEach((dir) => {
 
-		let row = pos.row + dir.row;
-		let col = pos.col + dir.col;
+		let pos = vec2.add(center, dir);
 
-		data[ row ] = data[ row ] || {};
-		data[ row ][ col ] = data[ row ][ col ] || Region.create();
+		if (vec2.intersects(pos, bounds.min, bounds.max)) {
+
+			data[ pos.x ] = data[ pos.x ] || {};
+			data[ pos.x ][ pos.y ] = data[ pos.x ][ pos.y ] || Region.create();
+		}
 	});
 }
+
+export default { create: createWorld };
