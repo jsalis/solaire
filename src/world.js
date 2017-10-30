@@ -25,10 +25,13 @@ const DEFAULT_CONFIG = {
  */
 function createWorld(config) {
 
-	let { bounds } = merge.recursive(true, DEFAULT_CONFIG, config);
+	config = merge.recursive(true, DEFAULT_CONFIG, config);
+
+	let { bounds } = config;
 	let position = { x: 0, y: 0 };
 	let data = {};
 
+	sanitize(config);
 	initialize(data, position, bounds);
 
 	return {
@@ -94,6 +97,19 @@ function createWorld(config) {
 			return this.move(Direction.CARDINALS.W);
 		}
 	};
+}
+
+function sanitize({ bounds: { min, max }}) {
+
+	if (min.x > 0 || min.y > 0) {
+
+		throw new Error('Invalid minimum bounds must not be greater than zero');
+	}
+
+	if (max.x < 0 || max.y < 0) {
+
+		throw new Error('Invalid maximum bounds must not be less than zero');
+	}
 }
 
 function initialize(data, center, bounds) {

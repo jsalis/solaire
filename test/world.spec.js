@@ -118,7 +118,23 @@ describe('World', () => {
 			});
 		});
 
-		it('must throw if the bounds are invalid');
+		it('must throw if the minimum bounds are invalid', () => {
+			let fn = () => World.create({
+				bounds: {
+					min: { x: 1, y: 2 }
+				}
+			});
+			expect(fn).toThrowError('Invalid minimum bounds must not be greater than zero');
+		});
+
+		it('must throw if the maximum bounds are invalid', () => {
+			let fn = () => World.create({
+				bounds: {
+					max: { x: -1, y: -2 }
+				}
+			});
+			expect(fn).toThrowError('Invalid maximum bounds must not be less than zero');
+		});
 	});
 
 	describe('region', () => {
