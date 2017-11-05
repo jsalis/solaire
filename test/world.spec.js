@@ -137,9 +137,49 @@ describe('World', () => {
 		});
 	});
 
+	describe('config.regions', () => {
+
+		it('must set the list of possible region types', () => {
+			let world = World.create({
+				regions: {
+					cave: {},
+					dungeon: {}
+				}
+			});
+			expect(world.regionTypes).toEqual([
+				'cave',
+				'dungeon'
+			]);
+		});
+
+		it('must set an empty list if no regions are given', () => {
+			let world = World.create();
+			expect(world.regionTypes).toEqual([]);
+		});
+	});
+
+	describe('config.chooseRegion', () => {
+
+		it('must determine the type of region for a given position', () => {
+			let chooseRegion = ({ x, y }) => (x + y === 0) ? 'cave' : 'dungeon';
+			let world = World.create({
+				regions: {
+					cave: {},
+					dungeon: {}
+				},
+				chooseRegion
+			});
+			Object.values(Direction.NEIGHBORS).forEach((dir) => {
+				expect(world.region(dir)).toEqual(
+					jasmine.objectContaining({ type: chooseRegion(dir) })
+				);
+			});
+		});
+	});
+
 	describe('region', () => {
 
-		it('must return the region at the given point', () => {
+		it('must return the region at the given position', () => {
 			let world = World.create();
 			expect(world.region({ x: 0, y: 0 })).toBe(world.data[ 0 ][ 0 ]);
 		});

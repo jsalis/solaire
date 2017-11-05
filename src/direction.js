@@ -9,20 +9,10 @@ export default class Direction {
 	 * @param {Number} x    The x direction.
 	 * @param {Number} y    The y direction.
 	 */
-	constructor(x, y) {
+	constructor(x = 0, y = 0) {
 
 		this.x = x;
 		this.y = y;
-	}
-
-	get col() {
-
-		return this.x;
-	}
-
-	get row() {
-
-		return this.y;
 	}
 }
 
@@ -34,7 +24,7 @@ Direction.CARDINALS = {
 	N: new Direction(0, -1),
 	E: new Direction(1, 0),
 	S: new Direction(0, 1),
-	W: new Direction(-1, 0),
+	W: new Direction(-1, 0)
 };
 
 Direction.ORDINALS = {

@@ -2,13 +2,14 @@
 /**
  * Creates a new region object.
  *
+ * @param   {Object} config
  * @returns {Object}
  */
-function createRegion() {
+function createRegion(config) {
 
 	return {
 
-		// TODO
+		type: config.type
 	};
 }
 

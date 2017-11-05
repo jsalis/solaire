@@ -14,7 +14,11 @@ const DEFAULT_CONFIG = {
 	bounds: {
 		min: { x: -Infinity, y: -Infinity },
 		max: { x: Infinity, y: Infinity }
-	}
+	},
+
+	regions: {},
+
+	chooseRegion() {}
 };
 
 /**
@@ -27,12 +31,12 @@ function createWorld(config) {
 
 	config = merge.recursive(true, DEFAULT_CONFIG, config);
 
-	let { bounds } = config;
+	let { bounds, regions, chooseRegion } = config;
 	let position = { x: 0, y: 0 };
 	let data = {};
 
 	sanitize(config);
-	initialize(data, position, bounds);
+	initialize(data, position, bounds, chooseRegion);
 
 	return {
 
@@ -44,6 +48,11 @@ function createWorld(config) {
 		get position() {
 
 			return vec2.clone(position);
+		},
+
+		get regionTypes() {
+
+			return Object.keys(regions);
 		},
 
 		region(pos) {
@@ -64,7 +73,7 @@ function createWorld(config) {
 
 				position.x = clamp(position.x + dir.x, bounds.min.x, bounds.max.x);
 				position.y = clamp(position.y + dir.y, bounds.min.y, bounds.max.y);
-				initialize(data, position, bounds);
+				initialize(data, position, bounds, chooseRegion);
 
 				if (vec2.equals(position, current)) {
 
@@ -112,7 +121,7 @@ function sanitize({ bounds: { min, max }}) {
 	}
 }
 
-function initialize(data, center, bounds) {
+function initialize(data, center, bounds, chooseRegion) {
 
 	Object.values(Direction.NEIGHBORS).forEach((dir) => {
 
@@ -121,7 +130,7 @@ function initialize(data, center, bounds) {
 		if (vec2.intersects(pos, bounds.min, bounds.max)) {
 
 			data[ pos.x ] = data[ pos.x ] || {};
-			data[ pos.x ][ pos.y ] = data[ pos.x ][ pos.y ] || Region.create();
+			data[ pos.x ][ pos.y ] = data[ pos.x ][ pos.y ] || Region.create({ type: chooseRegion(pos) });
 		}
 	});
 }
