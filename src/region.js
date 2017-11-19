@@ -9,7 +9,9 @@ function createRegion(config) {
 
 	return {
 
-		type: config.type
+		type: config.type,
+		seed: '',
+		data: []
 	};
 }
 

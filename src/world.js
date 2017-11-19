@@ -31,12 +31,12 @@ function createWorld(config) {
 
 	config = merge.recursive(true, DEFAULT_CONFIG, config);
 
-	let { bounds, regions, chooseRegion } = config;
+	let { bounds, regions } = config;
 	let position = { x: 0, y: 0 };
 	let data = {};
 
 	sanitize(config);
-	initialize(data, position, bounds, chooseRegion);
+	initialize(data, position, config);
 
 	return {
 
@@ -73,7 +73,7 @@ function createWorld(config) {
 
 				position.x = clamp(position.x + dir.x, bounds.min.x, bounds.max.x);
 				position.y = clamp(position.y + dir.y, bounds.min.y, bounds.max.y);
-				initialize(data, position, bounds, chooseRegion);
+				initialize(data, position, config);
 
 				if (vec2.equals(position, current)) {
 
@@ -108,7 +108,7 @@ function createWorld(config) {
 	};
 }
 
-function sanitize({ bounds: { min, max }}) {
+function sanitize({ bounds: { min, max }, regions }) {
 
 	if (min.x > 0 || min.y > 0) {
 
@@ -119,18 +119,26 @@ function sanitize({ bounds: { min, max }}) {
 
 		throw new Error('Invalid maximum bounds must not be less than zero');
 	}
+
+	if (Object.keys(regions).length === 0) {
+
+		throw new Error('No regions defined');
+	}
 }
 
-function initialize(data, center, bounds, chooseRegion) {
+function initialize(data, position, { bounds, regions, chooseRegion }) {
 
 	Object.values(Direction.NEIGHBORS).forEach((dir) => {
 
-		let pos = vec2.add(center, dir);
+		let pos = vec2.add(position, dir);
 
 		if (vec2.intersects(pos, bounds.min, bounds.max)) {
 
 			data[ pos.x ] = data[ pos.x ] || {};
 			data[ pos.x ][ pos.y ] = data[ pos.x ][ pos.y ] || Region.create({ type: chooseRegion(pos) });
+
+			let region = data[ pos.x ][ pos.y ];
+			region.data = regions[ region.type ].init();
 		}
 	});
 }

@@ -4,8 +4,25 @@ import Direction from '../src/direction';
 
 describe('World', () => {
 
+	let config;
+
+	beforeEach(() => {
+		config = {
+			regions: {
+				'default': {
+					init() {
+						return [];
+					}
+				}
+			},
+			chooseRegion() {
+				return 'default';
+			}
+		};
+	});
+
 	it('must initialize regions at the origin', () => {
-		let world = World.create();
+		let world = World.create(config);
 		Object.values(Direction.NEIGHBORS).forEach((dir) => {
 			expect(world.region(dir)).toEqual(jasmine.any(Object));
 		});
@@ -14,11 +31,10 @@ describe('World', () => {
 	describe('config.bounds', () => {
 
 		it('must bound the north movement', (done) => {
-			let world = World.create({
-				bounds: {
-					min: { y: -1 }
-				}
-			});
+			config.bounds = {
+				min: { y: -1 }
+			};
+			let world = World.create(config);
 			world.moveNorth()
 				.catch(done.fail);
 			world.moveNorth()
@@ -32,11 +48,10 @@ describe('World', () => {
 		});
 
 		it('must bound the east movement', (done) => {
-			let world = World.create({
-				bounds: {
-					max: { x: 1 }
-				}
-			});
+			config.bounds = {
+				max: { x: 1 }
+			};
+			let world = World.create(config);
 			world.moveEast()
 				.catch(done.fail);
 			world.moveEast()
@@ -50,11 +65,10 @@ describe('World', () => {
 		});
 
 		it('must bound the south movement', (done) => {
-			let world = World.create({
-				bounds: {
-					max: { y: 1 }
-				}
-			});
+			config.bounds = {
+				max: { y: 1 }
+			};
+			let world = World.create(config);
 			world.moveSouth()
 				.catch(done.fail);
 			world.moveSouth()
@@ -68,11 +82,10 @@ describe('World', () => {
 		});
 
 		it('must bound the west movement', (done) => {
-			let world = World.create({
-				bounds: {
-					min: { x: -1 }
-				}
-			});
+			config.bounds = {
+				min: { x: -1 }
+			};
+			let world = World.create(config);
 			world.moveWest()
 				.catch(done.fail);
 			world.moveWest()
@@ -86,12 +99,11 @@ describe('World', () => {
 		});
 
 		it('must initialize only one region with minimum bounds', () => {
-			let world = World.create({
-				bounds: {
-					min: { x: 0, y: 0 },
-					max: { x: 0, y: 0 }
-				}
-			});
+			config.bounds = {
+				min: { x: 0, y: 0 },
+				max: { x: 0, y: 0 }
+			};
+			let world = World.create(config);
 			expect(world.region({ x: 0, y: 0 })).toEqual(jasmine.any(Object));
 			Object.values(Direction.CARDINALS).forEach((dir) => {
 				expect(world.region(dir)).toBe(undefined);
@@ -102,12 +114,11 @@ describe('World', () => {
 		});
 
 		it('must only initialize regions within the bounds', () => {
-			let world = World.create({
-				bounds: {
-					min: { x: -1, y: -1 },
-					max: { x: 1, y: 1 }
-				}
-			});
+			config.bounds = {
+				min: { x: -1, y: -1 },
+				max: { x: 1, y: 1 }
+			};
+			let world = World.create(config);
 			world.moveSouth();
 			let position = world.position;
 			Object.values(Direction.NEIGHBORS).forEach((dir) => {
@@ -119,20 +130,18 @@ describe('World', () => {
 		});
 
 		it('must throw if the minimum bounds are invalid', () => {
-			let fn = () => World.create({
-				bounds: {
-					min: { x: 1, y: 2 }
-				}
-			});
+			config.bounds = {
+				min: { x: 1, y: 2 }
+			};
+			let fn = () => World.create(config);
 			expect(fn).toThrowError('Invalid minimum bounds must not be greater than zero');
 		});
 
 		it('must throw if the maximum bounds are invalid', () => {
-			let fn = () => World.create({
-				bounds: {
-					max: { x: -1, y: -2 }
-				}
-			});
+			config.bounds = {
+				max: { x: -1, y: -2 }
+			};
+			let fn = () => World.create(config);
 			expect(fn).toThrowError('Invalid maximum bounds must not be less than zero');
 		});
 	});
@@ -142,8 +151,19 @@ describe('World', () => {
 		it('must set the list of possible region types', () => {
 			let world = World.create({
 				regions: {
-					cave: {},
-					dungeon: {}
+					cave: {
+						init() {
+							return [];
+						}
+					},
+					dungeon: {
+						init() {
+							return [];
+						}
+					}
+				},
+				chooseRegion() {
+					return 'cave';
 				}
 			});
 			expect(world.regionTypes).toEqual([
@@ -152,40 +172,77 @@ describe('World', () => {
 			]);
 		});
 
-		it('must set an empty list if no regions are given', () => {
-			let world = World.create();
-			expect(world.regionTypes).toEqual([]);
+		it('must throw if no regions are given', () => {
+			config.regions = {};
+			let fn = () => World.create(config);
+			expect(fn).toThrowError('No regions defined');
+		});
+
+		it('must initialize each region using the given function', () => {
+			let data = [
+				[0, 1, 2],
+				[3, 4, 5],
+				[6, 7, 8]
+			];
+			let init = jasmine.createSpy('init').and.returnValue(data);
+			let world = World.create({
+				regions: {
+					cave: {
+						init
+					}
+				},
+				chooseRegion() {
+					return 'cave';
+				}
+			});
+			expect(init).toHaveBeenCalled();
+			expect(world.region({ x: 0, y: 0 })).toEqual(
+				jasmine.objectContaining({ data })
+			);
 		});
 	});
 
 	describe('config.chooseRegion', () => {
 
 		it('must determine the type of region for a given position', () => {
-			let chooseRegion = ({ x, y }) => (x + y === 0) ? 'cave' : 'dungeon';
+			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
+				({ x, y }) => (x + y === 0) ? 'cave' : 'dungeon'
+			);
 			let world = World.create({
 				regions: {
-					cave: {},
-					dungeon: {}
+					cave: {
+						init() {
+							return [];
+						}
+					},
+					dungeon: {
+						init() {
+							return [];
+						}
+					}
 				},
 				chooseRegion
 			});
+			expect(chooseRegion).toHaveBeenCalledTimes(9);
 			Object.values(Direction.NEIGHBORS).forEach((dir) => {
 				expect(world.region(dir)).toEqual(
 					jasmine.objectContaining({ type: chooseRegion(dir) })
 				);
 			});
 		});
+
+		it('must throw if a valid region type is not returned');
 	});
 
 	describe('region', () => {
 
 		it('must return the region at the given position', () => {
-			let world = World.create();
+			let world = World.create(config);
 			expect(world.region({ x: 0, y: 0 })).toBe(world.data[ 0 ][ 0 ]);
 		});
 
 		it('must return undefined if the region does not exist', () => {
-			let world = World.create();
+			let world = World.create(config);
 			expect(world.region({ x: 8, y: 8 })).toBe(undefined);
 		});
 	});
@@ -193,7 +250,7 @@ describe('World', () => {
 	describe('position', () => {
 
 		it('must not be mutable', () => {
-			let world = World.create();
+			let world = World.create(config);
 			world.position.x = 1;
 			world.position.y = 2;
 			expect(world.position).toEqual({ x: 0, y: 0 });
@@ -208,7 +265,7 @@ describe('World', () => {
 	describe('moveNorth', () => {
 
 		it('must move the current position north by one unit', (done) => {
-			let world = World.create();
+			let world = World.create(config);
 			world.moveNorth()
 				.then(done)
 				.catch(done.fail);
@@ -219,7 +276,7 @@ describe('World', () => {
 	describe('moveEast', () => {
 
 		it('must move the current position east by one unit', (done) => {
-			let world = World.create();
+			let world = World.create(config);
 			world.moveEast()
 				.then(done)
 				.catch(done.fail);
@@ -230,7 +287,7 @@ describe('World', () => {
 	describe('moveSouth', () => {
 
 		it('must move the current position south by one unit', (done) => {
-			let world = World.create();
+			let world = World.create(config);
 			world.moveSouth()
 				.then(done)
 				.catch(done.fail);
@@ -241,7 +298,7 @@ describe('World', () => {
 	describe('moveWest', () => {
 
 		it('must move the current position west by one unit', (done) => {
-			let world = World.create();
+			let world = World.create(config);
 			world.moveWest()
 				.then(done)
 				.catch(done.fail);
