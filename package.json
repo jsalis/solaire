@@ -18,6 +18,7 @@
     "test": "karma start --single-run --browsers ChromeHeadless",
     "clean": "rimraf build dist",
     "build": "rollup --config",
+    "start": "serve --port 8080",
     "report-coverage": "cat ./build/coverage/lcov.info | codecov",
     "commitmsg": "validate-commit-msg",
     "release": "standard-version"
@@ -59,6 +60,7 @@
     "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-istanbul": "^1.1.0",
     "rollup-plugin-node-resolve": "^2.0.0",
+    "serve": "^6.4.1",
     "standard-version": "^4.2.0",
     "validate-commit-msg": "^2.12.2"
   },
