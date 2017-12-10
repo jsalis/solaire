@@ -5,13 +5,14 @@ import babel from 'rollup-plugin-babel';
 
 export default {
 
-	entry: 'src/index.js',
-	targets: [{
+	input: 'src/index.js',
+	name: 'solaire',
+	output: [{
 		format: 'cjs',
-		dest: 'dist/solaire.js'
+		file: 'dist/solaire.js'
 	}, {
 		format: 'es',
-		dest: 'dist/solaire.module.js'
+		file: 'dist/solaire.module.js'
 	}],
 	plugins: [
 		nodeResolve({
