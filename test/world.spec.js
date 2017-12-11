@@ -14,9 +14,6 @@ describe('World', () => {
 						return [];
 					}
 				}
-			},
-			chooseRegion() {
-				return 'default';
 			}
 		};
 	});
@@ -161,9 +158,6 @@ describe('World', () => {
 							return [];
 						}
 					}
-				},
-				chooseRegion() {
-					return 'cave';
 				}
 			});
 			expect(world.regionTypes).toEqual([
@@ -190,9 +184,6 @@ describe('World', () => {
 					cave: {
 						init
 					}
-				},
-				chooseRegion() {
-					return 'cave';
 				}
 			});
 			expect(init).toHaveBeenCalled();
@@ -205,28 +196,30 @@ describe('World', () => {
 	describe('config.chooseRegion', () => {
 
 		it('must determine the type of region for a given position', () => {
-			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
-				({ x, y }) => (x + y === 0) ? 'cave' : 'dungeon'
-			);
-			let world = World.create({
-				regions: {
-					cave: {
-						init() {
-							return [];
-						}
-					},
-					dungeon: {
-						init() {
-							return [];
-						}
+			let regions = {
+				cave: {
+					init() {
+						return [];
 					}
 				},
+				dungeon: {
+					init() {
+						return [];
+					}
+				}
+			};
+			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
+				(pos, regionTypes) => (pos.x + pos.y === 0) ? regionTypes[0] : regionTypes[1]
+			);
+			let world = World.create({
+				regions,
 				chooseRegion
 			});
 			expect(chooseRegion).toHaveBeenCalledTimes(9);
 			Object.values(Direction.NEIGHBORS).forEach((dir) => {
+				let type = chooseRegion(dir, Object.keys(regions));
 				expect(world.region(dir)).toEqual(
-					jasmine.objectContaining({ type: chooseRegion(dir) })
+					jasmine.objectContaining({ type })
 				);
 			});
 		});

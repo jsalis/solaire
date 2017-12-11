@@ -18,7 +18,11 @@ const DEFAULT_CONFIG = {
 
 	regions: {},
 
-	chooseRegion() {}
+	chooseRegion(pos, types) {
+
+		let i = Math.floor(Math.random() * types.length);
+		return types[ i ];
+	}
 };
 
 /**
@@ -131,11 +135,12 @@ function initialize(data, position, { bounds, regions, chooseRegion }) {
 	Object.values(Direction.NEIGHBORS).forEach((dir) => {
 
 		let pos = vec2.add(position, dir);
+		let types = Object.keys(regions);
 
 		if (vec2.intersects(pos, bounds.min, bounds.max)) {
 
 			data[ pos.x ] = data[ pos.x ] || {};
-			data[ pos.x ][ pos.y ] = data[ pos.x ][ pos.y ] || Region.create({ type: chooseRegion(pos) });
+			data[ pos.x ][ pos.y ] = data[ pos.x ][ pos.y ] || Region.create({ type: chooseRegion(pos, types) });
 
 			let region = data[ pos.x ][ pos.y ];
 			region.data = regions[ region.type ].init();
