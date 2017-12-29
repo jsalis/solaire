@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>solaire - simple example</title>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script type="module">
+
+            import { World, Direction } from '../dist/solaire.module.js';
+
+            const world = World.create({
+
+                seed: 'abc123',
+
+	            bounds: {
+		            min: { x: -4, y: -4 },
+		            max: { x: 4, y: 4 }
+	            },
+
+                regions: {
+	                first: {
+	                	init() {
+	                		return [
+	                			[0, 1, 0, 1],
+                                [1, 0, 1, 0],
+                                [0, 1, 0, 1],
+                                [1, 0, 1, 0]
+                            ];
+                        }
+                    },
+                    second: {
+	                	init() {
+			                return [
+				                [1, 1, 1, 1],
+				                [1, 0, 0, 1],
+				                [1, 0, 0, 1],
+				                [1, 1, 1, 1]
+			                ];
+                        }
+                    }
+                }
+            });
+
+            const size = 200;
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = size * 3;
+            canvas.height = size * 3;
+
+            function render() {
+
+	            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	            Object.values(Direction.NEIGHBORS).forEach((dir) => {
+
+		            let x = world.position.x + dir.x;
+		            let y = world.position.y + dir.y;
+	            	let region = world.region({ x, y });
+
+	            	if (!region) {
+	            		return;
+                    }
+
+	            	let origin = {
+	            		x: (dir.x + 1) * size,
+                        y: (dir.y + 1) * size
+                    };
+
+		            for (let x = 0; x < region.data.length; x++) {
+			            for (let y = 0; y < region.data[x].length; y++) {
+
+			            	let unit = size / 4;
+			            	let pos = {
+			            		x: origin.x + (x * unit),
+                                y: origin.y + (y * unit)
+                            };
+
+				            ctx.fillStyle = region.data[x][y] ? 'black' : 'gray';
+				            ctx.fillRect(pos.x, pos.y, unit, unit);
+			            }
+                    }
+	            });
+            }
+
+            document.addEventListener('keypress', (event) => {
+
+            	switch (event.which) {
+                    case 119:
+                    	world.moveNorth().then(render);
+                    	break;
+                    case 100:
+                    	world.moveEast().then(render);
+                    	break;
+                    case 115:
+                    	world.moveSouth().then(render);
+                    	break;
+                    case 97:
+                    	world.moveWest().then(render);
+                    	break;
+                }
+            });
+
+            render();
+
+        </script>
+    </body>
+</html>

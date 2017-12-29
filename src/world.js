@@ -1,6 +1,7 @@
 
 import merge from 'merge';
 import clamp from 'clamp';
+import seedrandom from 'seedrandom/seedrandom';
 
 import * as vec2 from './math/vec2';
 import Direction from './direction';
@@ -16,12 +17,13 @@ const DEFAULT_CONFIG = {
 		max: { x: Infinity, y: Infinity }
 	},
 
+	seed: '',
+
 	regions: {},
 
-	chooseRegion(pos, types) {
+	chooseRegion({ regionTypes, random }) {
 
-		let i = Math.floor(Math.random() * types.length);
-		return types[ i ];
+		return regionTypes[ regionTypes.length * random() | 0 ];
 	}
 };
 
@@ -35,7 +37,14 @@ function createWorld(config) {
 
 	config = merge.recursive(true, DEFAULT_CONFIG, config);
 
-	let { bounds, regions } = config;
+	seedrandom(config.seed, {
+		pass(random, seed) {
+			config.random = random;
+			config.seed = seed;
+		}
+	});
+
+	let { bounds, seed, regions } = config;
 	let position = { x: 0, y: 0 };
 	let data = {};
 
@@ -47,6 +56,11 @@ function createWorld(config) {
 		get data() {
 
 			return data;
+		},
+
+		get seed() {
+
+			return seed;
 		},
 
 		get position() {
@@ -130,7 +144,7 @@ function sanitize({ bounds: { min, max }, regions }) {
 	}
 }
 
-function initialize(data, position, { bounds, regions, chooseRegion }) {
+function initialize(data, position, { bounds, regions, chooseRegion, seed }) {
 
 	Object.values(Direction.NEIGHBORS).forEach((dir) => {
 
@@ -140,7 +154,17 @@ function initialize(data, position, { bounds, regions, chooseRegion }) {
 		if (vec2.intersects(pos, bounds.min, bounds.max)) {
 
 			data[ pos.x ] = data[ pos.x ] || {};
-			data[ pos.x ][ pos.y ] = data[ pos.x ][ pos.y ] || Region.create({ type: chooseRegion(pos, types) });
+
+			if (!data[ pos.x ][ pos.y ]) {
+
+				data[ pos.x ][ pos.y ] = Region.create({
+					type: chooseRegion({
+						position:    pos,
+						regionTypes: types,
+						random:      seedrandom([ seed, pos ])
+					})
+				});
+			}
 
 			let region = data[ pos.x ][ pos.y ];
 			region.data = regions[ region.type ].init();

@@ -209,7 +209,7 @@ describe('World', () => {
 				}
 			};
 			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
-				(pos, regionTypes) => (pos.x + pos.y === 0) ? regionTypes[0] : regionTypes[1]
+				({ position, regionTypes }) => (position.x + position.y === 0) ? regionTypes[0] : regionTypes[1]
 			);
 			let world = World.create({
 				regions,
@@ -217,7 +217,10 @@ describe('World', () => {
 			});
 			expect(chooseRegion).toHaveBeenCalledTimes(9);
 			Object.values(Direction.NEIGHBORS).forEach((dir) => {
-				let type = chooseRegion(dir, Object.keys(regions));
+				let type = chooseRegion({
+					position: dir,
+					regionTypes: Object.keys(regions)
+				});
 				expect(world.region(dir)).toEqual(
 					jasmine.objectContaining({ type })
 				);

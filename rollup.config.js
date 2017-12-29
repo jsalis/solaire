@@ -14,6 +14,7 @@ export default {
 		format: 'es',
 		file: 'dist/solaire.module.js'
 	}],
+	// external: ['crypto'],
 	plugins: [
 		nodeResolve({
 			jsnext: true,
