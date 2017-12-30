@@ -9,7 +9,7 @@ describe('World', () => {
 	beforeEach(() => {
 		config = {
 			regions: {
-				'default': {
+				example: {
 					init() {
 						return [];
 					}
@@ -140,6 +140,15 @@ describe('World', () => {
 			};
 			let fn = () => World.create(config);
 			expect(fn).toThrowError('Invalid maximum bounds must not be less than zero');
+		});
+	});
+
+	describe('config.seed', () => {
+
+		it('must set world seed', () => {
+			config.seed = 'abc123';
+			let world = World.create(config);
+			expect(world.seed).toBe(config.seed);
 		});
 	});
 
