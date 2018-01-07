@@ -167,7 +167,9 @@ function initialize(data, position, { bounds, regions, chooseRegion, seed }) {
 			}
 
 			let region = data[ pos.x ][ pos.y ];
-			region.data = regions[ region.type ].init();
+			region.data = regions[ region.type ].init({
+				random: seedrandom([ seed, pos ])
+			});
 		}
 	});
 }

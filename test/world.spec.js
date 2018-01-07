@@ -200,6 +200,29 @@ describe('World', () => {
 				jasmine.objectContaining({ data })
 			);
 		});
+
+		it('must pass a random number generator to each region initializer', () => {
+			let init = jasmine.createSpy('init').and.callFake(({ random }) => [
+				[ random(), random(), random() ],
+				[ random(), random(), random() ],
+				[ random(), random(), random() ]
+			]);
+			let world = World.create({
+				regions: {
+					cave: {
+						init
+					}
+				}
+			});
+			let region = world.region({ x: 0, y: 0 });
+			let uniques = {};
+			region.data.forEach((row) => {
+				row.forEach((el) => {
+					uniques[ el ] = true;
+				});
+			});
+			expect(Object.keys(uniques).length).toBe(9);
+		});
 	});
 
 	describe('config.chooseRegion', () => {

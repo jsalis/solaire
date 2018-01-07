@@ -20,30 +20,22 @@
 	            },
 
                 regions: {
-	                first: {
-	                	init() {
-	                		return [
-	                			[0, 1, 0, 1],
-                                [1, 0, 1, 0],
-                                [0, 1, 0, 1],
-                                [1, 0, 1, 0]
-                            ];
-                        }
-                    },
-                    second: {
-	                	init() {
-			                return [
-				                [1, 1, 1, 1],
-				                [1, 0, 0, 1],
-				                [1, 0, 0, 1],
-				                [1, 1, 1, 1]
-			                ];
+	                example: {
+	                	init({ random }) {
+			                let data = [];
+			                for (let i = 0; i < 12; i++) {
+				                data[i] = [];
+				                for (let j = 0; j < 12; j++) {
+					                data[i][j] = (random() < 0.5) ? 1 : 0;
+				                }
+			                }
+			                return data;
                         }
                     }
                 }
             });
 
-            const size = 200;
+            const size = 216;
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
 
@@ -72,7 +64,7 @@
 		            for (let x = 0; x < region.data.length; x++) {
 			            for (let y = 0; y < region.data[x].length; y++) {
 
-			            	let unit = size / 4;
+			            	let unit = size / 12;
 			            	let pos = {
 			            		x: origin.x + (x * unit),
                                 y: origin.y + (y * unit)
