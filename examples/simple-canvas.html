@@ -10,6 +10,8 @@
 
             import { World, Direction } from '../dist/solaire.module.js';
 
+            const regionSize = 32;
+
             const world = World.create({
 
                 seed: 'abc123',
@@ -19,13 +21,15 @@
 		            max: { x: 4, y: 4 }
 	            },
 
+	            regionSize: regionSize,
+
                 regions: {
 	                example: {
 	                	init({ random }) {
 			                let data = [];
-			                for (let i = 0; i < 12; i++) {
+			                for (let i = 0; i < regionSize; i++) {
 				                data[i] = [];
-				                for (let j = 0; j < 12; j++) {
+				                for (let j = 0; j < regionSize; j++) {
 					                data[i][j] = (random() < 0.5) ? 1 : 0;
 				                }
 			                }
@@ -35,7 +39,7 @@
                 }
             });
 
-            const size = 216;
+            const size = 256;
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
 
@@ -64,7 +68,7 @@
 		            for (let x = 0; x < region.data.length; x++) {
 			            for (let y = 0; y < region.data[x].length; y++) {
 
-			            	let unit = size / 12;
+			            	let unit = size / world.regionSize;
 			            	let pos = {
 			            		x: origin.x + (x * unit),
                                 y: origin.y + (y * unit)

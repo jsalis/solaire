@@ -21,6 +21,8 @@ const DEFAULT_CONFIG = {
 
 	regions: {},
 
+	regionSize: 32,
+
 	chooseRegion({ regionTypes, random }) {
 
 		return regionTypes[ regionTypes.length * random() | 0 ];
@@ -44,7 +46,7 @@ function createWorld(config) {
 		}
 	});
 
-	let { bounds, seed, regions } = config;
+	let { bounds, seed, regions, regionSize } = config;
 	let position = { x: 0, y: 0 };
 	let data = {};
 
@@ -71,6 +73,11 @@ function createWorld(config) {
 		get regionTypes() {
 
 			return Object.keys(regions);
+		},
+
+		get regionSize() {
+
+			return regionSize;
 		},
 
 		region(pos) {
@@ -144,7 +151,7 @@ function sanitize({ bounds: { min, max }, regions }) {
 	}
 }
 
-function initialize(data, position, { bounds, regions, chooseRegion, seed }) {
+function initialize(data, position, { bounds, regions, chooseRegion, regionSize, seed }) {
 
 	Object.values(Direction.NEIGHBORS).forEach((dir) => {
 
@@ -170,6 +177,11 @@ function initialize(data, position, { bounds, regions, chooseRegion, seed }) {
 			region.data = regions[ region.type ].init({
 				random: seedrandom([ seed, pos ])
 			});
+
+			if (region.data.length !== regionSize) {
+
+				throw new Error(`Invalid region data must have length of ${ regionSize }`);
+			}
 		}
 	});
 }
