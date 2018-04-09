@@ -10,15 +10,7 @@ describe('World', () => {
 		config = {
 			regionSize: 3,
 			regions: {
-				example: {
-					init() {
-						return [
-							[ 0, 0, 0 ],
-							[ 0, 0, 0 ],
-							[ 0, 0, 0 ]
-						];
-					}
-				}
+				example: {}
 			}
 		};
 	});
@@ -161,24 +153,9 @@ describe('World', () => {
 
 		it('must set the list of possible region types', () => {
 			let world = World.create({
-				regionSize: 2,
 				regions: {
-					cave: {
-						init() {
-							return [
-								[ 0, 0 ],
-								[ 0, 0 ]
-							];
-						}
-					},
-					dungeon: {
-						init() {
-							return [
-								[ 1, 1 ],
-								[ 1, 1 ]
-							];
-						}
-					}
+					cave: {},
+					dungeon: {}
 				}
 			});
 			expect(world.regionTypes).toEqual([
@@ -194,32 +171,21 @@ describe('World', () => {
 		});
 
 		it('must initialize each region using the given function', () => {
-			let data = [
-				[0, 1, 2],
-				[3, 4, 5],
-				[6, 7, 8]
-			];
-			let init = jasmine.createSpy('init').and.returnValue(data);
-			let world = World.create({
-				regionSize: 3,
+			let init = jasmine.createSpy('init');
+			World.create({
 				regions: {
 					cave: {
 						init
 					}
 				}
 			});
-			expect(init).toHaveBeenCalled();
-			expect(world.region({ x: 0, y: 0 })).toEqual(
-				jasmine.objectContaining({ data })
-			);
+			expect(init).toHaveBeenCalledTimes(9);
 		});
 
 		it('must pass a random number generator to each region initializer', () => {
-			let init = jasmine.createSpy('init').and.callFake(({ random }) => [
-				[ random(), random(), random() ],
-				[ random(), random(), random() ],
-				[ random(), random(), random() ]
-			]);
+			let init = jasmine.createSpy('init').and.callFake(({ data, random }) => {
+				data.fill(random);
+			});
 			let world = World.create({
 				regionSize: 3,
 				regions: {
@@ -237,23 +203,6 @@ describe('World', () => {
 			});
 			expect(Object.keys(uniques).length).toBe(9);
 		});
-
-		it('must throw if a region initializer does not create data with the defined size', () => {
-			let regionSize = 3;
-			let init = jasmine.createSpy('init').and.callFake(() => [
-				[ 0, 0, 0 ],
-				[ 0, 0, 0 ]
-			]);
-			let fn = () => World.create({
-				regionSize,
-				regions: {
-					cave: {
-						init
-					}
-				}
-			});
-			expect(fn).toThrowError(`Invalid region data must have length of ${ regionSize }`);
-		});
 	});
 
 	describe('config.regionSize', () => {
@@ -263,48 +212,36 @@ describe('World', () => {
 			let world = World.create({
 				regionSize,
 				regions: {
-					cave: {
-						init() {
-							return [
-								[0, 1, 2],
-								[3, 4, 5],
-								[6, 7, 8]
-							];
-						}
-					}
+					cave: {}
 				}
 			});
 			expect(world.regionSize).toBe(regionSize);
+		});
+
+		it('must initialize region data to the given size', () => {
+			let regionSize = 3;
+			let world = World.create({
+				regionSize,
+				regions: {
+					cave: {}
+				}
+			});
+			let region = world.region({ x: 0, y: 0 });
+			expect(region.data.length).toEqual(regionSize);
 		});
 	});
 
 	describe('config.chooseRegion', () => {
 
 		it('must determine the type of region for a given position', () => {
-			let regionSize = 2;
 			let regions = {
-				cave: {
-					init() {
-						return [
-							[ 0, 0 ],
-							[ 0, 0 ]
-						];
-					}
-				},
-				dungeon: {
-					init() {
-						return [
-							[ 1, 1 ],
-							[ 1, 1 ]
-						];
-					}
-				}
+				cave: {},
+				dungeon: {}
 			};
 			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
 				({ position, regionTypes }) => (position.x + position.y === 0) ? regionTypes[0] : regionTypes[1]
 			);
 			let world = World.create({
-				regionSize,
 				regions,
 				chooseRegion
 			});

@@ -10,8 +10,6 @@
 
             import { World, Direction } from '../dist/solaire.module.js';
 
-            const regionSize = 32;
-
             const world = World.create({
 
                 seed: 'abc123',
@@ -21,19 +19,12 @@
 		            max: { x: 4, y: 4 }
 	            },
 
-	            regionSize: regionSize,
+	            regionSize: 32,
 
                 regions: {
-	                example: {
-	                	init({ random }) {
-			                let data = [];
-			                for (let i = 0; i < regionSize; i++) {
-				                data[i] = [];
-				                for (let j = 0; j < regionSize; j++) {
-					                data[i][j] = (random() < 0.5) ? 1 : 0;
-				                }
-			                }
-			                return data;
+	                first: {
+	                	init({ data, random }) {
+	                		data.fill(() => (random() < 0.5) ? 1 : 0);
                         }
                     }
                 }

@@ -174,9 +174,15 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 			}
 
 			let region = data[ pos.x ][ pos.y ];
-			region.data = regions[ region.type ].init({
-				random: seedrandom([ seed, pos ])
-			});
+			region.data = createData(regionSize);
+
+			if (typeof regions[ region.type ].init === 'function') {
+
+				regions[ region.type ].init({
+					data:   region.data,
+					random: seedrandom([ seed, pos ])
+				});
+			}
 
 			if (region.data.length !== regionSize) {
 
@@ -184,6 +190,21 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 			}
 		}
 	});
+}
+
+function createData(size) {
+
+	let data = Array(size).fill().map(() => Array(size).fill(0));
+
+	data.fill = (fn) => {
+		for (let i = 0; i < data.length; i++) {
+			for (let j = 0; j < data[ i ].length; j++) {
+				data[ i ][ j ] = fn();
+			}
+		}
+	};
+
+	return data;
 }
 
 export default { create: createWorld };
