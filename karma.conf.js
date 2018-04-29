@@ -38,7 +38,9 @@ module.exports = function (karma) {
 		},
 
 		rollupPreprocessor: {
-			format: 'iife',
+			output: {
+				format: 'iife'
+			},
 			plugins: [
 				istanbul({
 					exclude: [

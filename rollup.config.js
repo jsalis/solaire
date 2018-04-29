@@ -6,11 +6,12 @@ import babel from 'rollup-plugin-babel';
 export default {
 
 	input: 'src/index.js',
-	name: 'solaire',
 	output: [{
+		name: 'solaire',
 		format: 'cjs',
 		file: 'dist/solaire.js'
 	}, {
+		name: 'solaire',
 		format: 'es',
 		file: 'dist/solaire.module.js'
 	}],
