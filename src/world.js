@@ -4,6 +4,7 @@ import clamp from 'clamp';
 import seedrandom from 'seedrandom/seedrandom';
 
 import * as vec2 from './math/vec2';
+import { attempt, isFunction } from './utils';
 import Direction from './direction';
 import Region from './region';
 
@@ -24,9 +25,10 @@ const DEFAULT_CONFIG = {
 	regionSize: 32,
 
 	chooseRegion({ regionTypes, random }) {
-
 		return regionTypes[ regionTypes.length * random() | 0 ];
-	}
+	},
+
+	generate() {}
 };
 
 /**
@@ -46,7 +48,6 @@ function createWorld(config) {
 		}
 	});
 
-	let { bounds, seed, regions, regionSize } = config;
 	let position = { x: 0, y: 0 };
 	let data = {};
 
@@ -56,78 +57,70 @@ function createWorld(config) {
 	return {
 
 		get data() {
-
 			return data;
 		},
 
 		get seed() {
-
-			return seed;
+			return config.seed;
 		},
 
 		get position() {
-
 			return vec2.clone(position);
 		},
 
 		get regionTypes() {
-
-			return Object.keys(regions);
+			return Object.keys(config.regions);
 		},
 
 		get regionSize() {
-
-			return regionSize;
+			return config.regionSize;
 		},
 
 		region(pos) {
-
 			return data[ pos.x ] && data[ pos.x ][ pos.y ];
 		},
 
 		generate() {
 
-			// TODO
+			let random = seedrandom([ config.seed, position ]);
+			let regions = Object.values(Direction.NEIGHBORS)
+				.map((dir) => {
+					let pos = vec2.add(position, dir);
+					return this.region(pos);
+				})
+				.filter(Boolean);
+
+			config.generate({ random, regions });
 		},
 
 		move(dir) {
+			return attempt(() => {
 
-			return new Promise((resolve, reject) => {
-
+				let { bounds } = config;
 				let current = vec2.clone(position);
-
 				position.x = clamp(position.x + dir.x, bounds.min.x, bounds.max.x);
 				position.y = clamp(position.y + dir.y, bounds.min.y, bounds.max.y);
 				initialize(data, position, config);
 
 				if (vec2.equals(position, current)) {
-
-					reject(new Error('World position out of bounds'));
-
-				} else {
-
-					resolve();
+					throw new Error('World position out of bounds');
 				}
 			});
 		},
 
 		moveNorth() {
-
 			return this.move(Direction.CARDINALS.N);
 		},
 
 		moveEast() {
-
 			return this.move(Direction.CARDINALS.E);
 		},
 
 		moveSouth() {
-
 			return this.move(Direction.CARDINALS.S);
 		},
 
 		moveWest() {
-
 			return this.move(Direction.CARDINALS.W);
 		}
 	};
@@ -136,17 +129,14 @@ function createWorld(config) {
 function sanitize({ bounds: { min, max }, regions }) {
 
 	if (min.x > 0 || min.y > 0) {
-
 		throw new Error('Invalid minimum bounds must not be greater than zero');
 	}
 
 	if (max.x < 0 || max.y < 0) {
-
 		throw new Error('Invalid maximum bounds must not be less than zero');
 	}
 
 	if (Object.keys(regions).length === 0) {
-
 		throw new Error('No regions defined');
 	}
 }
@@ -163,29 +153,27 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 			data[ pos.x ] = data[ pos.x ] || {};
 
 			if (!data[ pos.x ][ pos.y ]) {
-
 				data[ pos.x ][ pos.y ] = Region.create({
 					type: chooseRegion({
-						position:    pos,
+						position: pos,
 						regionTypes: types,
-						random:      seedrandom([ seed, pos ])
-					})
+						random: seedrandom([ seed, pos ])
+					}),
+					position: pos
 				});
 			}
 
 			let region = data[ pos.x ][ pos.y ];
 			region.data = createData(regionSize);
 
-			if (typeof regions[ region.type ].init === 'function') {
-
+			if (isFunction(regions[ region.type ].init)) {
 				regions[ region.type ].init({
-					data:   region.data,
+					data: region.data,
 					random: seedrandom([ seed, pos ])
 				});
 			}
 
 			if (region.data.length !== regionSize) {
-
 				throw new Error(`Invalid region data must have length of ${ regionSize }`);
 			}
 		}

@@ -10,7 +10,6 @@ export default class Direction {
 	 * @param {Number} y    The y direction.
 	 */
 	constructor(x = 0, y = 0) {
-
 		this.x = x;
 		this.y = y;
 	}

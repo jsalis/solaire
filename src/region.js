@@ -8,8 +8,8 @@
 function createRegion(config) {
 
 	return {
-
 		type: config.type,
+		position: config.position,
 		seed: '',
 		data: []
 	};

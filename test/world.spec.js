@@ -283,6 +283,43 @@ describe('World', () => {
 		});
 	});
 
+	describe('generate', () => {
+
+		it('must pass a list of regions that are the neighbors to the current position', () => {
+			config.generate = jasmine.createSpy('generate');
+			let world = World.create(config);
+			world.generate();
+			expect(config.generate).toHaveBeenCalledWith(
+				jasmine.objectContaining({
+					regions: [
+						world.region({ x: 0, y: 0 }),
+						world.region({ x: 0, y: -1 }),
+						world.region({ x: 1, y: 0 }),
+						world.region({ x: 0, y: 1 }),
+						world.region({ x: -1, y: 0 }),
+						world.region({ x: 1, y: -1 }),
+						world.region({ x: 1, y: 1 }),
+						world.region({ x: -1, y: 1 }),
+						world.region({ x: -1, y: -1 })
+					]
+				})
+			);
+		});
+
+		it('must pass a random number generator to the generate function', () => {
+			config.generate = jasmine.createSpy('generate');
+			let world = World.create(config);
+			world.generate();
+			expect(config.generate).toHaveBeenCalledWith(
+				jasmine.objectContaining({
+					random: jasmine.any(Function)
+				})
+			);
+			let { random } = config.generate.calls.mostRecent().args[0];
+			expect(random()).not.toBe(random());
+		});
+	});
+
 	describe('move', () => {
 
 		it('must handle a direction of zero length');
