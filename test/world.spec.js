@@ -22,6 +22,13 @@ describe('World', () => {
 		});
 	});
 
+	it('must set the position of all regions', () => {
+		let world = World.create(config);
+		Object.values(Direction.NEIGHBORS).forEach((dir) => {
+			expect(world.region(dir).position).toEqual({ x: dir.x, y: dir.y });
+		});
+	});
+
 	describe('config.bounds', () => {
 
 		it('must bound the north movement', (done) => {

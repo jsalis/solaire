@@ -20,3 +20,13 @@ export function attempt(fn) {
 export function isFunction(val) {
 	return typeof val === 'function';
 }
+
+/**
+ * Determines whether a value is defined.
+ *
+ * @param   {*} val
+ * @returns {Boolean}
+ */
+export function isDefined(val) {
+	return val !== undefined;
+}
