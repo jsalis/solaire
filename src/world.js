@@ -7,6 +7,7 @@ import * as vec2 from './math/vec2';
 import { attempt, isFunction, isDefined } from './utils';
 import Direction from './direction';
 import Region from './region';
+import RegionGenerator from './region-generator';
 
 /**
  * @type {Object} The default world config.
@@ -89,8 +90,9 @@ function createWorld(config) {
 					return this.region(pos);
 				})
 				.filter(Boolean);
+			let regionGenerator = RegionGenerator.create({ regions });
 
-			config.generate({ random, regions });
+			config.generate({ regions: regionGenerator, random });
 		},
 
 		move(dir) {

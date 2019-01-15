@@ -298,19 +298,21 @@ describe('World', () => {
 			world.generate();
 			expect(config.generate).toHaveBeenCalledWith(
 				jasmine.objectContaining({
-					regions: [
-						world.region({ x: 0, y: 0 }),
-						world.region({ x: 0, y: -1 }),
-						world.region({ x: 1, y: 0 }),
-						world.region({ x: 0, y: 1 }),
-						world.region({ x: -1, y: 0 }),
-						world.region({ x: 1, y: -1 }),
-						world.region({ x: 1, y: 1 }),
-						world.region({ x: -1, y: 1 }),
-						world.region({ x: -1, y: -1 })
-					]
+					regions: jasmine.any(Object)
 				})
 			);
+			let { regions } = config.generate.calls.mostRecent().args[0];
+			expect(regions.get()).toEqual([
+				world.region({ x: 0, y: 0 }),
+				world.region({ x: 0, y: -1 }),
+				world.region({ x: 1, y: 0 }),
+				world.region({ x: 0, y: 1 }),
+				world.region({ x: -1, y: 0 }),
+				world.region({ x: 1, y: -1 }),
+				world.region({ x: 1, y: 1 }),
+				world.region({ x: -1, y: 1 }),
+				world.region({ x: -1, y: -1 })
+			]);
 		});
 
 		it('must pass a random number generator to the generate function', () => {
