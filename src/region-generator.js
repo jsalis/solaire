@@ -7,20 +7,32 @@
  */
 function createRegionGenerator({ regions }) {
 
+	let selection = regions;
+
 	return {
 
 		get() {
-			return regions;
+			return [ ...selection ];
+		},
+
+		select(types) {
+
+			types = Array.isArray(types) ? types : [ types ];
+			selection = regions.filter((region) => types.includes(region.type));
+
+			return this;
 		},
 
 		mapTimes(count, callback) {
 
 			for (let i = 0; i < count; i++) {
-				let nextData = regions.map(callback);
-				regions.forEach((region, index) => {
+				let nextData = selection.map(callback);
+				selection.forEach((region, index) => {
 					region.data = nextData[ index ];
 				});
 			}
+
+			return this;
 		}
 	};
 }
