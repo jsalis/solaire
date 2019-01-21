@@ -25,8 +25,8 @@ const DEFAULT_CONFIG = {
 
 	regionSize: 32,
 
-	chooseRegion({ regionTypes, random }) {
-		return regionTypes[ random() * regionTypes.length | 0 ];
+	chooseRegion({ regionTypes }) {
+		return regionTypes;
 	},
 
 	generate() {}
@@ -105,7 +105,7 @@ function createWorld(config) {
 				initialize(data, position, config);
 
 				if (vec2.equals(position, current)) {
-					throw new Error('World position out of bounds');
+					throw Error('World position out of bounds');
 				}
 			});
 		},
@@ -131,15 +131,15 @@ function createWorld(config) {
 function sanitize({ bounds: { min, max }, regions }) {
 
 	if (min.x > 0 || min.y > 0) {
-		throw new Error('Invalid minimum bounds must not be greater than zero');
+		throw Error('Invalid minimum bounds must not be greater than zero');
 	}
 
 	if (max.x < 0 || max.y < 0) {
-		throw new Error('Invalid maximum bounds must not be less than zero');
+		throw Error('Invalid maximum bounds must not be less than zero');
 	}
 
 	if (Object.keys(regions).length === 0) {
-		throw new Error('No regions defined');
+		throw Error('No regions defined');
 	}
 }
 
@@ -148,19 +148,31 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 	Object.values(Direction.NEIGHBORS).forEach((dir) => {
 
 		let pos = vec2.add(position, dir);
-		let types = Object.keys(regions);
+		let regionTypes = Object.keys(regions);
 
 		if (vec2.intersects(pos, bounds.min, bounds.max)) {
 
 			data[ pos.x ] = data[ pos.x ] || {};
 
 			if (!data[ pos.x ][ pos.y ]) {
+
+				let random = seedrandom([ seed, pos ]);
+				let type = chooseRegion({
+					position: pos,
+					regionTypes: regionTypes,
+					random: random
+				});
+
+				if (Array.isArray(type)) {
+					type = randomFrom(type, random)();
+				}
+
+				if (!regionTypes.includes(type)) {
+					throw Error(`Invalid region type "${ type }" has not been defined`);
+				}
+
 				data[ pos.x ][ pos.y ] = Region.create({
-					type: chooseRegion({
-						position: pos,
-						regionTypes: types,
-						random: seedrandom([ seed, pos ])
-					}),
+					type: type,
 					position: pos
 				});
 			}
@@ -179,7 +191,7 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 			}
 
 			if (region.data.length !== regionSize) {
-				throw new Error(`Invalid region data must have length of ${ regionSize }`);
+				throw Error(`Invalid region data must have length of ${ regionSize }`);
 			}
 		}
 	});
@@ -200,23 +212,28 @@ function createData({ size, random }) {
 
 	data.randomize = (entries) => {
 
-		let values = entries.map((el) => isDefined(el.value) ? el.value : el);
-		let weights = entries.map((el) => isDefined(el.weight) ? el.weight : 1);
-		let intervals = weights.reduce((array, val, i) => {
-			let prev = array[ i - 1 ] || 0;
-			array.push(val + prev);
-			return array;
-		}, []);
-		let sum = intervals[ intervals.length - 1 ];
-
-		data.fill(() => {
-			let r = random() * sum | 0;
-			let index = intervals.findIndex((int) => r < int);
-			return values[ index ];
-		});
+		data.fill(randomFrom(entries, random));
 	};
 
 	return data;
+}
+
+function randomFrom(entries, random) {
+
+	let values = entries.map((el) => isDefined(el.value) ? el.value : el);
+	let weights = entries.map((el) => isDefined(el.weight) ? el.weight : 1);
+	let intervals = weights.reduce((array, val, i) => {
+		let prev = array[ i - 1 ] || 0;
+		array.push(val + prev);
+		return array;
+	}, []);
+	let sum = intervals[ intervals.length - 1 ];
+
+	return () => {
+		let r = random() * sum | 0;
+		let index = intervals.findIndex((int) => r < int);
+		return values[ index ];
+	};
 }
 
 export default { create: createWorld };

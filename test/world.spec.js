@@ -264,7 +264,42 @@ describe('World', () => {
 			});
 		});
 
-		it('must throw if a valid region type is not returned');
+		it('must choose from an array of weighted types', () => {
+			let regions = {
+				first: {},
+				second: {},
+				third: {}
+			};
+			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
+				() => [
+					{ value: 'first', weight: 1 },
+					{ value: 'second', weight: 1 },
+					{ value: 'third', weight: 0 }
+				]
+			);
+			let world = World.create({
+				regions,
+				chooseRegion
+			});
+			expect(chooseRegion).toHaveBeenCalledTimes(9);
+			Object.values(Direction.NEIGHBORS).forEach((dir) => {
+				expect(world.region(dir)).not.toEqual(
+					jasmine.objectContaining({ type: 'third' })
+				);
+			});
+		});
+
+		it('must throw if a valid region type is not returned', () => {
+			let regions = {
+				cave: {},
+				dungeon: {}
+			};
+			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
+				() => 'mountains'
+			);
+			let fn = () => World.create({ regions, chooseRegion });
+			expect(fn).toThrowError('Invalid region type "mountains" has not been defined');
+		});
 	});
 
 	describe('region', () => {
