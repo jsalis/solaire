@@ -12,7 +12,7 @@
     "jasmine"
   ],
   "rules": {
-    "arrow-parens": 2,
+    "arrow-parens": [2, "as-needed"],
     "arrow-spacing": 2,
     "brace-style": 2,
     "curly": [2, "multi-line", "consistent"],
@@ -86,5 +86,23 @@
     "valid-jsdoc": [0, { "requireReturn": false, "requireReturnDescription": false }],
     "wrap-iife": [2, "inside"],
     "yoda": 2
-  }
+  },
+  "overrides": [{
+    "files": ["*.spec.js", "*-mock.js"],
+    "env": {
+      "jasmine": true
+    },
+    "rules": {
+      "jasmine/missing-expect": 1,
+      "jasmine/named-spy": 2,
+      "jasmine/no-disabled-tests": 1,
+      "jasmine/no-expect-in-setup-teardown": 1,
+      "jasmine/no-focused-tests": 2,
+      "jasmine/no-global-setup": 2,
+      "jasmine/no-spec-dupes": [1, "branch"],
+      "jasmine/no-suite-dupes": [1, "branch"],
+      "jasmine/no-suite-callback-args": 2,
+      "jasmine/valid-expect": 2
+    }
+  }]
 }

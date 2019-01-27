@@ -6,7 +6,7 @@
  * @returns {Promise}
  */
 export function attempt(fn) {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		resolve(fn());
 	});
 }

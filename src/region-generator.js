@@ -21,14 +21,14 @@ function createRegionGenerator({ regions, seed }) {
 		select(types) {
 
 			types = Array.isArray(types) ? types : [ types ];
-			selection = regions.filter((region) => types.includes(region.type));
+			selection = regions.filter(region => types.includes(region.type));
 
 			return this;
 		},
 
 		apply(callback) {
 
-			let nextData = selection.map((region) => {
+			let nextData = selection.map(region => {
 				let effect = callback(region);
 				return effect({
 					data: region.data,

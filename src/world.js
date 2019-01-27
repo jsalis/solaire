@@ -84,7 +84,7 @@ function createWorld(config) {
 		generate() {
 
 			let regions = Object.values(Direction.NEIGHBORS)
-				.map((dir) => {
+				.map(dir => {
 					let pos = vec2.add(position, dir);
 					return this.region(pos);
 				})
@@ -146,7 +146,7 @@ function sanitize({ bounds: { min, max }, regions }) {
 
 function initialize(data, position, { bounds, regions, chooseRegion, regionSize, seed }) {
 
-	Object.values(Direction.NEIGHBORS).forEach((dir) => {
+	Object.values(Direction.NEIGHBORS).forEach(dir => {
 
 		let pos = vec2.add(position, dir);
 		let regionTypes = Object.keys(regions);
@@ -204,7 +204,7 @@ function createData({ size, random, regions, position }) {
 
 	let data = Array(size).fill().map(() => Array(size).fill(0));
 
-	data.fill = (fn) => {
+	data.fill = fn => {
 
 		for (let x = 0; x < size; x++) {
 			for (let y = 0; y < size; y++) {
@@ -213,7 +213,7 @@ function createData({ size, random, regions, position }) {
 		}
 	};
 
-	data.randomize = (entries) => {
+	data.randomize = entries => {
 
 		data.fill(randomFrom(entries, random));
 	};
@@ -228,7 +228,7 @@ function createData({ size, random, regions, position }) {
 		localize(regions, position, x, y, val);
 	};
 
-	data.duplicate = (fn) => {
+	data.duplicate = fn => {
 
 		let nextData = [];
 
@@ -285,8 +285,8 @@ function compareIndex(data, index) {
 
 function randomFrom(entries, random) {
 
-	let values = entries.map((el) => isDefined(el.value) ? el.value : el);
-	let weights = entries.map((el) => isDefined(el.weight) ? el.weight : 1);
+	let values = entries.map(el => isDefined(el.value) ? el.value : el);
+	let weights = entries.map(el => isDefined(el.weight) ? el.weight : 1);
 	let intervals = weights.reduce((array, val, i) => {
 		let prev = array[ i - 1 ] || 0;
 		array.push(val + prev);
@@ -296,7 +296,7 @@ function randomFrom(entries, random) {
 
 	return () => {
 		let r = random() * sum | 0;
-		let index = intervals.findIndex((int) => r < int);
+		let index = intervals.findIndex(int => r < int);
 		return values[ index ];
 	};
 }

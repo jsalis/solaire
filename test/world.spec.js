@@ -17,21 +17,21 @@ describe('World', () => {
 
 	it('must initialize regions at the origin', () => {
 		let world = World.create(config);
-		Object.values(Direction.NEIGHBORS).forEach((dir) => {
+		Object.values(Direction.NEIGHBORS).forEach(dir => {
 			expect(world.region(dir)).toEqual(jasmine.any(Object));
 		});
 	});
 
 	it('must set the position of all regions', () => {
 		let world = World.create(config);
-		Object.values(Direction.NEIGHBORS).forEach((dir) => {
+		Object.values(Direction.NEIGHBORS).forEach(dir => {
 			expect(world.region(dir).position).toEqual({ x: dir.x, y: dir.y });
 		});
 	});
 
 	describe('config.bounds', () => {
 
-		it('must bound the north movement', (done) => {
+		it('must bound the north movement', done => {
 			config.bounds = {
 				min: { y: -1 }
 			};
@@ -40,7 +40,7 @@ describe('World', () => {
 				.catch(done.fail);
 			world.moveNorth()
 				.then(done.fail)
-				.catch((error) => {
+				.catch(error => {
 					expect(error).toEqual(jasmine.any(Error));
 					expect(error.message).toBe('World position out of bounds');
 					done();
@@ -48,7 +48,7 @@ describe('World', () => {
 			expect(world.position).toEqual({ x: 0, y: -1 });
 		});
 
-		it('must bound the east movement', (done) => {
+		it('must bound the east movement', done => {
 			config.bounds = {
 				max: { x: 1 }
 			};
@@ -57,7 +57,7 @@ describe('World', () => {
 				.catch(done.fail);
 			world.moveEast()
 				.then(done.fail)
-				.catch((error) => {
+				.catch(error => {
 					expect(error).toEqual(jasmine.any(Error));
 					expect(error.message).toBe('World position out of bounds');
 					done();
@@ -65,7 +65,7 @@ describe('World', () => {
 			expect(world.position).toEqual({ x: 1, y: 0 });
 		});
 
-		it('must bound the south movement', (done) => {
+		it('must bound the south movement', done => {
 			config.bounds = {
 				max: { y: 1 }
 			};
@@ -74,7 +74,7 @@ describe('World', () => {
 				.catch(done.fail);
 			world.moveSouth()
 				.then(done.fail)
-				.catch((error) => {
+				.catch(error => {
 					expect(error).toEqual(jasmine.any(Error));
 					expect(error.message).toBe('World position out of bounds');
 					done();
@@ -82,7 +82,7 @@ describe('World', () => {
 			expect(world.position).toEqual({ x: 0, y: 1 });
 		});
 
-		it('must bound the west movement', (done) => {
+		it('must bound the west movement', done => {
 			config.bounds = {
 				min: { x: -1 }
 			};
@@ -91,7 +91,7 @@ describe('World', () => {
 				.catch(done.fail);
 			world.moveWest()
 				.then(done.fail)
-				.catch((error) => {
+				.catch(error => {
 					expect(error).toEqual(jasmine.any(Error));
 					expect(error.message).toBe('World position out of bounds');
 					done();
@@ -106,10 +106,10 @@ describe('World', () => {
 			};
 			let world = World.create(config);
 			expect(world.region({ x: 0, y: 0 })).toEqual(jasmine.any(Object));
-			Object.values(Direction.CARDINALS).forEach((dir) => {
+			Object.values(Direction.CARDINALS).forEach(dir => {
 				expect(world.region(dir)).toBe(undefined);
 			});
-			Object.values(Direction.ORDINALS).forEach((dir) => {
+			Object.values(Direction.ORDINALS).forEach(dir => {
 				expect(world.region(dir)).toBe(undefined);
 			});
 		});
@@ -122,7 +122,7 @@ describe('World', () => {
 			let world = World.create(config);
 			world.moveSouth();
 			let position = world.position;
-			Object.values(Direction.NEIGHBORS).forEach((dir) => {
+			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				let x = position.x + dir.x;
 				let y = position.y + dir.y;
 				let value = y > 1 ? undefined : jasmine.any(Object);
@@ -203,8 +203,8 @@ describe('World', () => {
 			});
 			let region = world.region({ x: 0, y: 0 });
 			let uniques = {};
-			region.data.forEach((row) => {
-				row.forEach((el) => {
+			region.data.forEach(row => {
+				row.forEach(el => {
 					uniques[ el ] = true;
 				});
 			});
@@ -253,7 +253,7 @@ describe('World', () => {
 				chooseRegion
 			});
 			expect(chooseRegion).toHaveBeenCalledTimes(9);
-			Object.values(Direction.NEIGHBORS).forEach((dir) => {
+			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				let type = chooseRegion({
 					position: dir,
 					regionTypes: Object.keys(regions)
@@ -282,7 +282,7 @@ describe('World', () => {
 				chooseRegion
 			});
 			expect(chooseRegion).toHaveBeenCalledTimes(9);
-			Object.values(Direction.NEIGHBORS).forEach((dir) => {
+			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				expect(world.region(dir)).not.toEqual(
 					jasmine.objectContaining({ type: 'third' })
 				);
@@ -358,7 +358,7 @@ describe('World', () => {
 
 	describe('moveNorth', () => {
 
-		it('must move the current position north by one unit', (done) => {
+		it('must move the current position north by one unit', done => {
 			let world = World.create(config);
 			world.moveNorth()
 				.then(done)
@@ -369,7 +369,7 @@ describe('World', () => {
 
 	describe('moveEast', () => {
 
-		it('must move the current position east by one unit', (done) => {
+		it('must move the current position east by one unit', done => {
 			let world = World.create(config);
 			world.moveEast()
 				.then(done)
@@ -380,7 +380,7 @@ describe('World', () => {
 
 	describe('moveSouth', () => {
 
-		it('must move the current position south by one unit', (done) => {
+		it('must move the current position south by one unit', done => {
 			let world = World.create(config);
 			world.moveSouth()
 				.then(done)
@@ -391,7 +391,7 @@ describe('World', () => {
 
 	describe('moveWest', () => {
 
-		it('must move the current position west by one unit', (done) => {
+		it('must move the current position west by one unit', done => {
 			let world = World.create(config);
 			world.moveWest()
 				.then(done)
