@@ -204,11 +204,11 @@ function createData({ size, random, regions, position }) {
 
 	let data = Array(size).fill().map(() => Array(size).fill(0));
 
-	data.fill = fn => {
+	data.fill = val => {
 
 		for (let x = 0; x < size; x++) {
 			for (let y = 0; y < size; y++) {
-				data[ x ][ y ] = fn(x, y);
+				data[ x ][ y ] = isFunction(val) ? val(x, y) : val;
 			}
 		}
 	};
@@ -228,14 +228,14 @@ function createData({ size, random, regions, position }) {
 		localize(regions, position, x, y, val);
 	};
 
-	data.duplicate = fn => {
+	data.duplicate = val => {
 
 		let nextData = [];
 
 		for (let x = 0; x < size; x++) {
 			nextData[ x ] = [];
 			for (let y = 0; y < size; y++) {
-				nextData[ x ][ y ] = fn(x, y);
+				nextData[ x ][ y ] = isFunction(val) ? val(x, y) : val;
 			}
 		}
 
