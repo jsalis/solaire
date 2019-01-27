@@ -349,19 +349,6 @@ describe('World', () => {
 				world.region({ x: -1, y: -1 })
 			]);
 		});
-
-		it('must pass a random number generator to the generate function', () => {
-			config.generate = jasmine.createSpy('generate');
-			let world = World.create(config);
-			world.generate();
-			expect(config.generate).toHaveBeenCalledWith(
-				jasmine.objectContaining({
-					random: jasmine.any(Function)
-				})
-			);
-			let { random } = config.generate.calls.mostRecent().args[0];
-			expect(random()).not.toBe(random());
-		});
 	});
 
 	describe('move', () => {

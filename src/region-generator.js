@@ -1,11 +1,14 @@
 
+import seedrandom from 'seedrandom/seedrandom';
+
 /**
  * Creates a new region generator object.
  *
- * @param   {Array} regions
+ * @param   {Array}  regions
+ * @param   {String} seed
  * @returns {Object}
  */
-function createRegionGenerator({ regions }) {
+function createRegionGenerator({ regions, seed }) {
 
 	let selection = regions;
 
@@ -23,13 +26,28 @@ function createRegionGenerator({ regions }) {
 			return this;
 		},
 
-		mapTimes(count, callback) {
+		apply(callback) {
+
+			let nextData = selection.map((region) => {
+				let effect = callback(region);
+				return effect({
+					data: region.data,
+					position: region.position,
+					random: seedrandom([ seed, region.position ])
+				});
+			});
+
+			selection.forEach((region, index) => {
+				region.data = nextData[ index ];
+			});
+
+			return this;
+		},
+
+		applyTimes(count, callback) {
 
 			for (let i = 0; i < count; i++) {
-				let nextData = selection.map(callback);
-				selection.forEach((region, index) => {
-					region.data = nextData[ index ];
-				});
+				this.apply(callback);
 			}
 
 			return this;

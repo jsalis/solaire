@@ -83,16 +83,17 @@ function createWorld(config) {
 
 		generate() {
 
-			let random = seedrandom([ config.seed, position ]);
 			let regions = Object.values(Direction.NEIGHBORS)
 				.map((dir) => {
 					let pos = vec2.add(position, dir);
 					return this.region(pos);
 				})
 				.filter(Boolean);
-			let regionGenerator = RegionGenerator.create({ regions });
 
-			config.generate({ regions: regionGenerator, random });
+			let { seed } = config;
+			let regionGenerator = RegionGenerator.create({ regions, seed });
+
+			config.generate({ regions: regionGenerator });
 		},
 
 		move(dir) {
