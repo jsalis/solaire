@@ -181,7 +181,9 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 			let region = data[ pos.x ][ pos.y ];
 			region.data = createData({
 				size: regionSize,
-				random: seedrandom([ seed, pos ])
+				random: seedrandom([ seed, pos ]),
+				regions: data,
+				position: pos
 			});
 
 			if (isFunction(regions[ region.type ].init)) {
@@ -198,15 +200,15 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 	});
 }
 
-function createData({ size, random }) {
+function createData({ size, random, regions, position }) {
 
 	let data = Array(size).fill().map(() => Array(size).fill(0));
 
 	data.fill = (fn) => {
 
-		for (let i = 0; i < data.length; i++) {
-			for (let j = 0; j < data[ i ].length; j++) {
-				data[ i ][ j ] = fn();
+		for (let x = 0; x < size; x++) {
+			for (let y = 0; y < size; y++) {
+				data[ x ][ y ] = fn(x, y);
 			}
 		}
 	};
@@ -216,7 +218,69 @@ function createData({ size, random }) {
 		data.fill(randomFrom(entries, random));
 	};
 
+	data.get = (x, y) => {
+
+		return localize(regions, position, x, y);
+	};
+
+	data.set = (x, y, val) => {
+
+		localize(regions, position, x, y, val);
+	};
+
+	data.duplicate = (fn) => {
+
+		let nextData = [];
+
+		for (let x = 0; x < size; x++) {
+			nextData[ x ] = [];
+			for (let y = 0; y < size; y++) {
+				nextData[ x ][ y ] = fn(x, y);
+			}
+		}
+
+		return nextData;
+	};
+
 	return data;
+}
+
+function localize(regions, position, x, y, val) {
+
+	let region = regions[ position.x ][ position.y ];
+	let local = { x: position.x, y: position.y };
+	let check = compareIndex(region.data, x);
+
+	while (check !== 0) {
+		local.x += check;
+		x -= check * region.data.length;
+		check = compareIndex(region.data, x);
+	}
+
+	check = compareIndex(region.data, y);
+
+	while (check !== 0) {
+		local.y += check;
+		y -= check * region.data.length;
+		check = compareIndex(region.data, y);
+	}
+
+	let localRegion = regions[ local.x ] && regions[ local.x ][ local.y ];
+
+	if (isDefined(val)) {
+
+		if (localRegion && localRegion.data[ x ] && isDefined(localRegion.data[ x ][ y ])) {
+			localRegion.data[ x ][ y ] = val;
+		}
+
+	} else {
+
+		return localRegion && localRegion.data[ x ] && localRegion.data[ x ][ y ];
+	}
+}
+
+function compareIndex(data, index) {
+	return index < 0 ? -1 : index >= data.length ? 1 : 0;
 }
 
 function randomFrom(entries, random) {

@@ -90,7 +90,7 @@ describe('RegionGenerator', () => {
 			expect(callback.calls.argsFor(0)[0]).toBe(regions[1]);
 		});
 
-		it('must return the context to allow method chaining', () => {
+		it('must pass region data to the effect function', () => {
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
@@ -98,8 +98,17 @@ describe('RegionGenerator', () => {
 			let generator = RegionGenerator.create({ regions });
 			let effect = jasmine.createSpy('effect');
 			let callback = jasmine.createSpy('callback').and.returnValue(effect);
-			let context = generator.apply(callback);
-			expect(context).toBe(generator);
+			generator.apply(callback);
+			expect(effect).toHaveBeenCalledWith(
+				jasmine.objectContaining({
+					data: regions[0].data
+				})
+			);
+			expect(effect).toHaveBeenCalledWith(
+				jasmine.objectContaining({
+					data: regions[1].data
+				})
+			);
 		});
 
 		it('must pass a random number generator to the effect function', () => {
@@ -118,6 +127,18 @@ describe('RegionGenerator', () => {
 			);
 			let { random } = effect.calls.mostRecent().args[0];
 			expect(random()).not.toBe(random());
+		});
+
+		it('must return the context to allow method chaining', () => {
+			let regions = [
+				Region.create({ type: 'first' }),
+				Region.create({ type: 'second' })
+			];
+			let generator = RegionGenerator.create({ regions });
+			let effect = jasmine.createSpy('effect');
+			let callback = jasmine.createSpy('callback').and.returnValue(effect);
+			let context = generator.apply(callback);
+			expect(context).toBe(generator);
 		});
 	});
 

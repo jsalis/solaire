@@ -4,8 +4,8 @@ import seedrandom from 'seedrandom/seedrandom';
 /**
  * Creates a new region generator object.
  *
- * @param   {Array}  regions
- * @param   {String} seed
+ * @param   {Array} regions
+ * @param   {*}     seed
  * @returns {Object}
  */
 function createRegionGenerator({ regions, seed }) {
@@ -32,13 +32,19 @@ function createRegionGenerator({ regions, seed }) {
 				let effect = callback(region);
 				return effect({
 					data: region.data,
-					position: region.position,
 					random: seedrandom([ seed, region.position ])
 				});
 			});
 
 			selection.forEach((region, index) => {
-				region.data = nextData[ index ];
+				let data = nextData[ index ];
+				if (data) {
+					for (let i = 0; i < data.length; i++) {
+						for (let j = 0; j < data[i].length; j++) {
+							region.data[ i ][ j ] = data[ i ][ j ];
+						}
+					}
+				}
 			});
 
 			return this;
