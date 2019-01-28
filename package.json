@@ -34,7 +34,6 @@
     "npm": "3.x"
   },
   "dependencies": {
-    "clamp": "^1.0.1",
     "merge": "^1.2.1",
     "seedrandom": "^2.4.4"
   },

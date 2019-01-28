@@ -33,7 +33,7 @@ describe('World', () => {
 
 		it('must bound the north movement', done => {
 			config.bounds = {
-				min: { y: -1 }
+				y: { min: -1 }
 			};
 			let world = World.create(config);
 			world.moveNorth()
@@ -50,7 +50,7 @@ describe('World', () => {
 
 		it('must bound the east movement', done => {
 			config.bounds = {
-				max: { x: 1 }
+				x: { max: 1 }
 			};
 			let world = World.create(config);
 			world.moveEast()
@@ -67,7 +67,7 @@ describe('World', () => {
 
 		it('must bound the south movement', done => {
 			config.bounds = {
-				max: { y: 1 }
+				y: { max: 1 }
 			};
 			let world = World.create(config);
 			world.moveSouth()
@@ -84,7 +84,7 @@ describe('World', () => {
 
 		it('must bound the west movement', done => {
 			config.bounds = {
-				min: { x: -1 }
+				x: { min: -1 }
 			};
 			let world = World.create(config);
 			world.moveWest()
@@ -101,8 +101,8 @@ describe('World', () => {
 
 		it('must initialize only one region with minimum bounds', () => {
 			config.bounds = {
-				min: { x: 0, y: 0 },
-				max: { x: 0, y: 0 }
+				x: { min: 0, max: 0 },
+				y: { min: 0, max: 0 }
 			};
 			let world = World.create(config);
 			expect(world.region({ x: 0, y: 0 })).toEqual(jasmine.any(Object));
@@ -116,8 +116,8 @@ describe('World', () => {
 
 		it('must only initialize regions within the bounds', () => {
 			config.bounds = {
-				min: { x: -1, y: -1 },
-				max: { x: 1, y: 1 }
+				x: { min: -1, max: 1 },
+				y: { min: -1, max: 1 }
 			};
 			let world = World.create(config);
 			world.moveSouth();
@@ -132,7 +132,8 @@ describe('World', () => {
 
 		it('must throw if the minimum bounds are invalid', () => {
 			config.bounds = {
-				min: { x: 1, y: 2 }
+				x: { min: 1 },
+				y: { min: 2 }
 			};
 			let fn = () => World.create(config);
 			expect(fn).toThrowError('Invalid minimum bounds must not be greater than zero');
@@ -140,10 +141,43 @@ describe('World', () => {
 
 		it('must throw if the maximum bounds are invalid', () => {
 			config.bounds = {
-				max: { x: -1, y: -2 }
+				x: { max: -1 },
+				y: { max: -2 }
 			};
 			let fn = () => World.create(config);
 			expect(fn).toThrowError('Invalid maximum bounds must not be less than zero');
+		});
+
+		it('must throw if the "x" minimum bound is undefined with wrap enabled', () => {
+			config.bounds = {
+				x: { max: 1, wrap: true }
+			};
+			let fn = () => World.create(config);
+			expect(fn).toThrowError('Wrapped bounds must define a minimum and maximum');
+		});
+
+		it('must throw if the "x" maximum bound is undefined with wrap enabled', () => {
+			config.bounds = {
+				x: { min: -1, wrap: true }
+			};
+			let fn = () => World.create(config);
+			expect(fn).toThrowError('Wrapped bounds must define a minimum and maximum');
+		});
+
+		it('must throw if the "y" minimum bound is undefined with wrap enabled', () => {
+			config.bounds = {
+				y: { max: 1, wrap: true }
+			};
+			let fn = () => World.create(config);
+			expect(fn).toThrowError('Wrapped bounds must define a minimum and maximum');
+		});
+
+		it('must throw if the "y" maximum bound is undefined with wrap enabled', () => {
+			config.bounds = {
+				y: { min: -1, wrap: true }
+			};
+			let fn = () => World.create(config);
+			expect(fn).toThrowError('Wrapped bounds must define a minimum and maximum');
 		});
 	});
 
@@ -312,6 +346,22 @@ describe('World', () => {
 		it('must return undefined if the region does not exist', () => {
 			let world = World.create(config);
 			expect(world.region({ x: 8, y: 8 })).toBe(undefined);
+		});
+
+		it('must wrap an out-of-bounds "x" position when enabled', () => {
+			config.bounds = {
+				x: { min: -1, max: 1, wrap: true }
+			};
+			let world = World.create(config);
+			expect(world.region({ x: -2, y: 0 })).toBe(world.data[ 1 ][ 0 ]);
+		});
+
+		it('must wrap an out-of-bounds "y" position when enabled', () => {
+			config.bounds = {
+				y: { min: -1, max: 1, wrap: true }
+			};
+			let world = World.create(config);
+			expect(world.region({ x: 0, y: -2 })).toBe(world.data[ 0 ][ 1 ]);
 		});
 	});
 
