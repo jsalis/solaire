@@ -3,6 +3,7 @@ import merge from 'merge';
 import seedrandom from 'seedrandom/seedrandom';
 
 import * as vec2 from './math/vec2';
+import * as effects from './effects';
 import { attempt, clamp, wrap, isFunction, isDefined } from './utils';
 import Direction from './direction';
 import Region from './region';
@@ -101,7 +102,7 @@ function createWorld(config) {
 			let { seed } = config;
 			let regionGenerator = RegionGenerator.create({ regions, seed });
 
-			config.generate({ regions: regionGenerator });
+			config.generate({ regions: regionGenerator, effects });
 		},
 
 		move(dir) {
