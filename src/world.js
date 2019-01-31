@@ -19,7 +19,7 @@ const DEFAULT_CONFIG = {
 		y: { min: -Infinity, max: Infinity, wrap: false }
 	},
 
-	seed: '',
+	seed: null,
 
 	regions: {},
 
