@@ -5,9 +5,9 @@ import seedrandom from 'seedrandom/seedrandom';
 import * as vec2 from './math/vec2';
 import * as effects from './effects';
 import { attempt, clamp, wrap, isFunction, isDefined } from './utils';
-import Direction from './direction';
-import Region from './region';
-import RegionGenerator from './region-generator';
+import { Direction } from './direction';
+import { Region } from './region';
+import { RegionGenerator } from './region-generator';
 
 /**
  * @type {Object} The default world config.
@@ -30,113 +30,116 @@ const DEFAULT_CONFIG = {
 	generate: () => {}
 };
 
-/**
- * Creates a new world object.
- *
- * @param   {Object} config
- * @returns {Object}
- */
-function createWorld(config) {
+export const World = {
 
-	config = merge.recursive(true, DEFAULT_CONFIG, config);
+	/**
+	 * Creates a new world object.
+	 *
+	 * @param   {Object} config
+	 * @returns {Object}
+	 */
+	create(config) {
 
-	seedrandom(config.seed, {
-		pass(random, seed) {
-			config.random = random;
-			config.seed = seed;
-		}
-	});
+		config = merge.recursive(true, DEFAULT_CONFIG, config);
 
-	let position = { x: 0, y: 0 };
-	let data = {};
-
-	sanitize(config);
-	initialize(data, position, config);
-
-	return {
-
-		get data() {
-			return data;
-		},
-
-		get seed() {
-			return config.seed;
-		},
-
-		get position() {
-			return vec2.clone(position);
-		},
-
-		get regionTypes() {
-			return Object.keys(config.regions);
-		},
-
-		get regionSize() {
-			return config.regionSize;
-		},
-
-		region(pos) {
-
-			let { bounds } = config;
-
-			if (bounds.x.wrap) {
-				pos.x = wrap(pos.x, bounds.x.min, bounds.x.max);
+		seedrandom(config.seed, {
+			pass(random, seed) {
+				config.random = random;
+				config.seed = seed;
 			}
+		});
 
-			if (bounds.y.wrap) {
-				pos.y = wrap(pos.y, bounds.y.min, bounds.y.max);
-			}
+		let position = { x: 0, y: 0 };
+		let data = {};
 
-			return data[ pos.x ] && data[ pos.x ][ pos.y ];
-		},
+		sanitize(config);
+		initialize(data, position, config);
 
-		generate() {
+		return {
 
-			let regions = Object.values(Direction.NEIGHBORS)
-				.map(dir => {
-					let pos = vec2.add(position, dir);
-					return this.region(pos);
-				})
-				.filter(Boolean);
+			get data() {
+				return data;
+			},
 
-			let { seed } = config;
-			let regionGenerator = RegionGenerator.create({ regions, seed });
+			get seed() {
+				return config.seed;
+			},
 
-			config.generate({ regions: regionGenerator, effects });
-		},
+			get position() {
+				return vec2.clone(position);
+			},
 
-		move(dir) {
-			return attempt(() => {
+			get regionTypes() {
+				return Object.keys(config.regions);
+			},
+
+			get regionSize() {
+				return config.regionSize;
+			},
+
+			region(pos) {
 
 				let { bounds } = config;
-				let current = vec2.clone(position);
-				position.x = (bounds.x.wrap ? wrap : clamp)(position.x + dir.x, bounds.x.min, bounds.x.max);
-				position.y = (bounds.y.wrap ? wrap : clamp)(position.y + dir.y, bounds.y.min, bounds.y.max);
-				initialize(data, position, config);
 
-				if (vec2.equals(position, current)) {
-					throw Error('World position out of bounds');
+				if (bounds.x.wrap) {
+					pos.x = wrap(pos.x, bounds.x.min, bounds.x.max);
 				}
-			});
-		},
 
-		moveNorth() {
-			return this.move(Direction.CARDINALS.N);
-		},
+				if (bounds.y.wrap) {
+					pos.y = wrap(pos.y, bounds.y.min, bounds.y.max);
+				}
 
-		moveEast() {
-			return this.move(Direction.CARDINALS.E);
-		},
+				return data[ pos.x ] && data[ pos.x ][ pos.y ];
+			},
 
-		moveSouth() {
-			return this.move(Direction.CARDINALS.S);
-		},
+			generate() {
 
-		moveWest() {
-			return this.move(Direction.CARDINALS.W);
-		}
-	};
-}
+				let regions = Object.values(Direction.NEIGHBORS)
+					.map(dir => {
+						let pos = vec2.add(position, dir);
+						return this.region(pos);
+					})
+					.filter(Boolean);
+
+				let { seed } = config;
+				let regionGenerator = RegionGenerator.create({ regions, seed });
+
+				config.generate({ regions: regionGenerator, effects });
+			},
+
+			move(dir) {
+				return attempt(() => {
+
+					let { bounds } = config;
+					let current = vec2.clone(position);
+					position.x = (bounds.x.wrap ? wrap : clamp)(position.x + dir.x, bounds.x.min, bounds.x.max);
+					position.y = (bounds.y.wrap ? wrap : clamp)(position.y + dir.y, bounds.y.min, bounds.y.max);
+					initialize(data, position, config);
+
+					if (vec2.equals(position, current)) {
+						throw Error('World position out of bounds');
+					}
+				});
+			},
+
+			moveNorth() {
+				return this.move(Direction.CARDINALS.N);
+			},
+
+			moveEast() {
+				return this.move(Direction.CARDINALS.E);
+			},
+
+			moveSouth() {
+				return this.move(Direction.CARDINALS.S);
+			},
+
+			moveWest() {
+				return this.move(Direction.CARDINALS.W);
+			}
+		};
+	}
+};
 
 function sanitize({ bounds, regions }) {
 
@@ -336,5 +339,3 @@ function randomFrom(entries, random) {
 		return values[ index ];
 	};
 }
-
-export default { create: createWorld };

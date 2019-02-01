@@ -1,6 +1,6 @@
 
-import World from '../src/world';
-import Direction from '../src/direction';
+import { World } from '../src/world';
+import { Direction } from '../src/direction';
 
 describe('World', () => {
 

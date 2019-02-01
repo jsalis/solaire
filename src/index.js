@@ -1,3 +1,3 @@
 
-export { default as Direction } from './direction';
-export { default as World } from './world';
+export { Direction } from './direction';
+export { World } from './world';

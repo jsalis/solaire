@@ -1,6 +1,6 @@
 
-import RegionGenerator from '../src/region-generator';
-import Region from '../src/region';
+import { RegionGenerator } from '../src/region-generator';
+import { Region } from '../src/region';
 
 describe('RegionGenerator', () => {
 

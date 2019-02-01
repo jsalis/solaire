@@ -2,7 +2,7 @@
 /**
  * @class Direction
  */
-export default class Direction {
+export class Direction {
 
 	/**
 	 * @constructor

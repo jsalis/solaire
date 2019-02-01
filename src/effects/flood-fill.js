@@ -1,5 +1,5 @@
 
-import Direction from '../direction';
+import { Direction } from '../direction';
 
 export const floodFill = ({ start, target, replace, spread = 1, decay = 1 }) => ({ data, random }) => {
 

@@ -1,17 +1,18 @@
 
-/**
- * Creates a new region object.
- *
- * @param   {Object} config
- * @returns {Object}
- */
-function createRegion(config) {
+export const Region = {
 
-	return {
-		type: config.type,
-		position: config.position,
-		data: []
-	};
-}
+	/**
+	 * Creates a new region object.
+	 *
+	 * @param   {Object} config
+	 * @returns {Object}
+	 */
+	create(config) {
 
-export default { create: createRegion };
+		return {
+			type: config.type,
+			position: config.position,
+			data: []
+		};
+	}
+};

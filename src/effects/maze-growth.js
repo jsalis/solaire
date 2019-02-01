@@ -1,5 +1,5 @@
 
-import Direction from '../direction';
+import { Direction } from '../direction';
 
 export const mazeGrowth = ({ start, replace, runFactor = 0.5, walkable = [] }) => ({ data, random }) => {
 
@@ -17,7 +17,7 @@ export const mazeGrowth = ({ start, replace, runFactor = 0.5, walkable = [] }) =
 			let x = node.x + (dir.x * 2);
 			let y = node.y + (dir.y * 2);
 
-			if (compareIndex(data, x) !== 0 || compareIndex(data[0], y) !== 0) {
+			if (x < 0 || x >= data.length || y < 0 || y >= data.length) {
 				return false;
 			}
 
@@ -47,7 +47,3 @@ export const mazeGrowth = ({ start, replace, runFactor = 0.5, walkable = [] }) =
 		}
 	}
 };
-
-function compareIndex(data, index) {
-	return index < 0 ? -1 : index >= data.length ? 1 : 0;
-}

@@ -1,64 +1,65 @@
 
 import seedrandom from 'seedrandom/seedrandom';
 
-/**
- * Creates a new region generator object.
- *
- * @param   {Array} regions
- * @param   {*}     seed
- * @returns {Object}
- */
-function createRegionGenerator({ regions, seed }) {
+export const RegionGenerator = {
 
-	let selection = regions;
+	/**
+	 * Creates a new region generator object.
+	 *
+	 * @param   {Array} regions
+	 * @param   {*}     seed
+	 * @returns {Object}
+	 */
+	create({ regions, seed }) {
 
-	return {
+		let selection = regions;
 
-		get() {
-			return [ ...selection ];
-		},
+		return {
 
-		select(types) {
+			get() {
+				return [ ...selection ];
+			},
 
-			types = Array.isArray(types) ? types : [ types ];
-			selection = regions.filter(region => types.includes(region.type));
+			select(types) {
 
-			return this;
-		},
+				types = Array.isArray(types) ? types : [ types ];
+				selection = regions.filter(region => types.includes(region.type));
 
-		apply(callback) {
+				return this;
+			},
 
-			let nextData = selection.map(region => {
-				let effect = callback(region);
-				return effect({
-					data: region.data,
-					random: seedrandom([ seed, region.position ])
+			apply(callback) {
+
+				let nextData = selection.map(region => {
+					let effect = callback(region);
+					return effect({
+						data: region.data,
+						random: seedrandom([ seed, region.position ])
+					});
 				});
-			});
 
-			selection.forEach((region, index) => {
-				let data = nextData[ index ];
-				if (data) {
-					for (let i = 0; i < data.length; i++) {
-						for (let j = 0; j < data[i].length; j++) {
-							region.data[ i ][ j ] = data[ i ][ j ];
+				selection.forEach((region, index) => {
+					let data = nextData[ index ];
+					if (data) {
+						for (let i = 0; i < data.length; i++) {
+							for (let j = 0; j < data[i].length; j++) {
+								region.data[ i ][ j ] = data[ i ][ j ];
+							}
 						}
 					}
+				});
+
+				return this;
+			},
+
+			applyTimes(count, callback) {
+
+				for (let i = 0; i < count; i++) {
+					this.apply(callback);
 				}
-			});
 
-			return this;
-		},
-
-		applyTimes(count, callback) {
-
-			for (let i = 0; i < count; i++) {
-				this.apply(callback);
+				return this;
 			}
-
-			return this;
-		}
-	};
-}
-
-export default { create: createRegionGenerator };
+		};
+	}
+};
