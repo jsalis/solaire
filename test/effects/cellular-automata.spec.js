@@ -1,26 +1,21 @@
 
+import seedrandom from 'seedrandom/seedrandom';
+
 import { cellularAutomata } from '../../src/effects/cellular-automata';
+import { DataSegment } from '../../src/data-segment';
 
 describe('cellularAutomata', () => {
 
 	it('must apply the effect to the data', () => {
-		let data = [
+		let size = 4;
+		let random = seedrandom('If only I could be so grossly incandescent!');
+		let data = DataSegment.create({ size, random });
+		data.fromArray([
 			[0, 1, 0, 0],
 			[0, 1, 1, 1],
 			[1, 0, 0, 0],
 			[0, 0, 1, 0]
-		];
-		data.get = (x, y) => data[ x ] && data[ x ][ y ];
-		data.duplicate = fn => {
-			let nextData = [];
-			for (let x = 0; x < data.length; x++) {
-				nextData[ x ] = [];
-				for (let y = 0; y < data[ x ].length; y++) {
-					nextData[ x ][ y ] = fn(x, y);
-				}
-			}
-			return nextData;
-		};
+		]);
 		let effect = cellularAutomata({
 			live: 1,
 			dead: 0,

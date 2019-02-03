@@ -136,7 +136,7 @@ describe('World', () => {
 				y: { min: 2 }
 			};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('Invalid minimum bounds must not be greater than zero');
+			expect(fn).toThrowError('Minimum bounds must not be greater than zero');
 		});
 
 		it('must throw if the maximum bounds are invalid', () => {
@@ -145,7 +145,7 @@ describe('World', () => {
 				y: { max: -2 }
 			};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('Invalid maximum bounds must not be less than zero');
+			expect(fn).toThrowError('Maximum bounds must not be less than zero');
 		});
 
 		it('must throw if the "x" minimum bound is undefined with wrap enabled', () => {
@@ -237,10 +237,8 @@ describe('World', () => {
 			});
 			let region = world.region({ x: 0, y: 0 });
 			let uniques = {};
-			region.data.forEach(row => {
-				row.forEach(el => {
-					uniques[ el ] = true;
-				});
+			region.data.each(el => {
+				uniques[ el ] = true;
 			});
 			expect(Object.keys(uniques).length).toBe(9);
 		});
@@ -268,7 +266,7 @@ describe('World', () => {
 				}
 			});
 			let region = world.region({ x: 0, y: 0 });
-			expect(region.data.length).toEqual(regionSize);
+			expect(region.data.size()).toEqual(regionSize);
 		});
 	});
 

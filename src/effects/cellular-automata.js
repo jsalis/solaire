@@ -1,9 +1,8 @@
 
 export const cellularAutomata = ({ born, survive, live, dead }) => ({ data }) => {
 
-	return data.duplicate((x, y) => {
+	return data.map((el, x, y) => {
 
-		let el = data[ x ][ y ];
 		let neighborCount = 0;
 
 		for (let i = -1; i <= 1; i++) {

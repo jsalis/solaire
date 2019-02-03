@@ -1,26 +1,21 @@
 
+import seedrandom from 'seedrandom/seedrandom';
+
 import { majorityRules } from '../../src/effects/majority-rules';
+import { DataSegment } from '../../src/data-segment';
 
 describe('majorityRules', () => {
 
 	it('must apply the effect to the data', () => {
-		let data = [
+		let size = 4;
+		let random = seedrandom('If only I could be so grossly incandescent!');
+		let data = DataSegment.create({ size, random });
+		data.fromArray([
 			[0, 2, 0, 0],
 			[2, 1, 2, 1],
 			[1, 0, 2, 1],
 			[0, 2, 1, 0]
-		];
-		data.get = (x, y) => data[ x ] && data[ x ][ y ];
-		data.duplicate = fn => {
-			let nextData = [];
-			for (let x = 0; x < data.length; x++) {
-				nextData[ x ] = [];
-				for (let y = 0; y < data[ x ].length; y++) {
-					nextData[ x ][ y ] = fn(x, y);
-				}
-			}
-			return nextData;
-		};
+		]);
 		let effect = majorityRules();
 		let result = effect({ data });
 		expect(result).toEqual([

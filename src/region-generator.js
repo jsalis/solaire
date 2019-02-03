@@ -41,9 +41,9 @@ export const RegionGenerator = {
 				selection.forEach((region, index) => {
 					let data = nextData[ index ];
 					if (data) {
-						for (let i = 0; i < data.length; i++) {
-							for (let j = 0; j < data[i].length; j++) {
-								region.data[ i ][ j ] = data[ i ][ j ];
+						for (let x = 0; x < data.length; x++) {
+							for (let y = 0; y < data[x].length; y++) {
+								region.data.set(x, y, data[ x ][ y ]);
 							}
 						}
 					}

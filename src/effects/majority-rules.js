@@ -3,7 +3,7 @@ import { isDefined } from '../utils';
 
 export const majorityRules = () => ({ data }) => {
 
-	return data.duplicate((x, y) => {
+	return data.map((el, x, y) => {
 
 		let neighborCount = {};
 
