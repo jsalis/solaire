@@ -1,5 +1,5 @@
 
-import seedrandom from 'seedrandom/seedrandom';
+import { randomWithSeed } from './utils/random';
 
 export const RegionGenerator = {
 
@@ -32,10 +32,9 @@ export const RegionGenerator = {
 
 				let nextData = selection.map(region => {
 					let effect = callback(region);
-					return effect({
-						data: region.data,
-						random: seedrandom([ seed, region.position ])
-					});
+					let { data } = region;
+					let random = randomWithSeed([ seed, region.position ]);
+					return effect({ data, random });
 				});
 
 				selection.forEach((region, index) => {

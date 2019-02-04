@@ -1,10 +1,10 @@
 
 import merge from 'merge';
-import seedrandom from 'seedrandom/seedrandom';
 
-import * as vec2 from './math/vec2';
+import * as vec2 from './utils/vec2';
 import * as effects from './effects';
-import { attempt, clamp, wrap, isFunction, randomFrom } from './utils';
+import { attempt, clamp, wrap, isFunction } from './utils/common';
+import { randomWithSeed, randomFrom } from './utils/random';
 import { Direction } from './direction';
 import { DataSegment } from './data-segment';
 import { Region } from './region';
@@ -43,13 +43,7 @@ export const World = {
 
 		config = merge.recursive(true, DEFAULT_CONFIG, config);
 
-		seedrandom(config.seed, {
-			pass(random, seed) {
-				config.random = random;
-				config.seed = seed;
-			}
-		});
-
+		let { seed } = randomWithSeed(config.seed);
 		let position = { x: 0, y: 0 };
 		let data = {};
 
@@ -63,7 +57,7 @@ export const World = {
 			},
 
 			get seed() {
-				return config.seed;
+				return seed;
 			},
 
 			get position() {
@@ -102,7 +96,6 @@ export const World = {
 					})
 					.filter(Boolean);
 
-				let { seed } = config;
 				let regionGenerator = RegionGenerator.create({ regions, seed });
 
 				config.generate({ regions: regionGenerator, effects });
@@ -188,7 +181,7 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 
 			if (!data[ pos.x ][ pos.y ]) {
 
-				let random = seedrandom([ seed, pos ]);
+				let random = randomWithSeed([ seed, pos ]);
 				let type = chooseRegion({
 					position: pos,
 					regionTypes: regionTypes,
@@ -210,9 +203,10 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 			}
 
 			let region = data[ pos.x ][ pos.y ];
+
 			region.data = DataSegment.create({
 				size: regionSize,
-				random: seedrandom([ seed, pos ]),
+				random: randomWithSeed([ seed, pos ]),
 				regions: data,
 				position: pos,
 				bounds: bounds
@@ -221,7 +215,7 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 			if (isFunction(regions[ region.type ].init)) {
 				regions[ region.type ].init({
 					data: region.data,
-					random: seedrandom([ seed, pos ])
+					random: randomWithSeed([ seed, pos ])
 				});
 			}
 		}

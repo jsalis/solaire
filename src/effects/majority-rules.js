@@ -1,5 +1,5 @@
 
-import { isDefined } from '../utils';
+import { isDefined } from '../utils/common';
 
 export const majorityRules = () => ({ data }) => {
 

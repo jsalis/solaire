@@ -1,7 +1,7 @@
 
-import * as utils from '../src/utils';
+import * as utils from '../../src/utils/common';
 
-describe('utils', () => {
+describe('common', () => {
 
 	describe('wrap', () => {
 

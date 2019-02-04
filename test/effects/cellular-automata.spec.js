@@ -1,14 +1,13 @@
 
-import seedrandom from 'seedrandom/seedrandom';
-
 import { cellularAutomata } from '../../src/effects/cellular-automata';
+import { randomWithSeed } from '../../src/utils/random';
 import { DataSegment } from '../../src/data-segment';
 
 describe('cellularAutomata', () => {
 
 	it('must apply the effect to the data', () => {
 		let size = 4;
-		let random = seedrandom('If only I could be so grossly incandescent!');
+		let random = randomWithSeed('If only I could be so grossly incandescent!');
 		let data = DataSegment.create({ size, random });
 		data.fromArray([
 			[0, 1, 0, 0],

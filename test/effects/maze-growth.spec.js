@@ -1,14 +1,13 @@
 
-import seedrandom from 'seedrandom/seedrandom';
-
 import { mazeGrowth } from '../../src/effects/maze-growth';
+import { randomWithSeed } from '../../src/utils/random';
 import { DataSegment } from '../../src/data-segment';
 
 describe('mazeGrowth', () => {
 
 	it('must apply the effect to the data', () => {
 		let size = 7;
-		let random = seedrandom('If only I could be so grossly incandescent!');
+		let random = randomWithSeed('If only I could be so grossly incandescent!');
 		let data = DataSegment.create({ size, random });
 		data.fill(0);
 		let effect = mazeGrowth({

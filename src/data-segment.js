@@ -1,5 +1,6 @@
 
-import { isFunction, isDefined, wrap, randomFrom } from './utils';
+import { isFunction, isDefined, wrap } from './utils/common';
+import { randomFrom } from './utils/random';
 
 export const DataSegment = {
 
