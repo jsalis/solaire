@@ -1,5 +1,6 @@
 
 import { isDefined } from '../utils/common';
+import { Direction } from '../direction';
 
 export const majorityRules = () => ({ data }) => {
 
@@ -7,22 +8,20 @@ export const majorityRules = () => ({ data }) => {
 
 		let neighborCount = {};
 
-		for (let i = -1; i <= 1; i++) {
-			for (let j = -1; j <= 1; j++) {
+		Object.values(Direction.NEIGHBORS).forEach(dir => {
 
-				let el = data.get(x + i, y + j);
+			let el = data.get(x + dir.x, y + dir.y);
 
-				if (!isDefined(el)) {
-					continue;
-				}
-
-				if (!neighborCount[ el ]) {
-					neighborCount[ el ] = 0;
-				}
-
-				neighborCount[ el ]++;
+			if (!isDefined(el)) {
+				return;
 			}
-		}
+
+			if (!neighborCount[ el ]) {
+				neighborCount[ el ] = 0;
+			}
+
+			neighborCount[ el ]++;
+		});
 
 		let majority = 0;
 		let majorityKey;
