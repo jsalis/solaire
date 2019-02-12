@@ -1,97 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>solaire - simple example</title>
-    </head>
-    <body>
-        <canvas id="canvas"></canvas>
-        <script type="module">
+	<head>
+		<meta charset="UTF-8">
+		<title>solaire - simple example</title>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas>
+		<script type="module">
 
-            import { World, Direction } from '../dist/solaire.module.js';
+			import { World, Direction } from '../dist/solaire.module.js';
 
-            const world = World.create({
+			const world = World.create({
 
-                seed: 'abc123',
+				seed: 'black sabbath iron maiden judas priest',
 
-	            bounds: {
-		            min: { x: -4, y: -4 },
-		            max: { x: 4, y: 4 }
-	            },
+				bounds: {
+                    x: { min: -6, max: 6, wrap: true },
+					y: { min: -6, max: 6, wrap: true }
+				},
 
-	            regionSize: 32,
+				regionSize: 32,
 
-                regions: {
-	                first: {
-	                	init({ data, random }) {
-	                		data.fill(() => (random() < 0.5) ? 1 : 0);
-                        }
-                    }
-                }
-            });
+				regions: {
+					sparseCave: {
+						init({ data }) {
 
-            const size = 256;
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
+							data.randomize([
+								{ value: 0, weight: 101 },
+								{ value: 1, weight: 99 }
+							]);
+						}
+					},
+					denseCave: {
+						init({ data }) {
 
-            canvas.width = size * 3;
-            canvas.height = size * 3;
+							data.randomize([
+								{ value: 0, weight: 115 },
+								{ value: 1, weight: 85 }
+							]);
+						}
+					},
+					goldDeposit: {
+						init({ data }) {
 
-            function render() {
+							data.randomize([
+								{ value: 0, weight: 5 },
+								{ value: 1, weight: 5 },
+								{ value: 3, weight: 6 }
+							]);
+						}
+					}
+				},
 
-	            ctx.clearRect(0, 0, canvas.width, canvas.height);
+				chooseRegion() {
 
-	            Object.values(Direction.NEIGHBORS).forEach((dir) => {
+					return [
+						{ value: 'sparseCave', weight: 15 },
+						{ value: 'denseCave', weight: 14 },
+						{ value: 'goldDeposit', weight: 1 }
+					];
+				},
 
-		            let x = world.position.x + dir.x;
-		            let y = world.position.y + dir.y;
-	            	let region = world.region({ x, y });
+				generate({ regions, effects }) {
 
-	            	if (!region) {
-	            		return;
-                    }
+					regions.select(['sparseCave', 'denseCave'])
+						.applyTimes(6, () => {
+							return effects.cellularAutomata({
+								live: 1,
+								dead: 0,
+								born: 5,
+								survive: 3
+							});
+						})
+						.applyTimes(5, () => {
+							return effects.cellularAutomata({
+								live: 1,
+								dead: 0,
+								born: 5,
+								survive: 5
+							});
+						});
 
-	            	let origin = {
-	            		x: (dir.x + 1) * size,
-                        y: (dir.y + 1) * size
-                    };
+					regions.select('goldDeposit')
+						.applyTimes(10, () => {
+							return effects.majorityRules();
+						});
 
-		            for (let x = 0; x < region.data.length; x++) {
-			            for (let y = 0; y < region.data[x].length; y++) {
+					regions.select('sparseCave')
+						.apply(() => {
+							return effects.floodFill({
+								start: { x: 16, y: 16 },
+								target: 1,
+								replace: 2,
+								spread: 1,
+								decay: 0.75
+							});
+						});
+				}
+			});
 
-			            	let unit = size / world.regionSize;
-			            	let pos = {
-			            		x: origin.x + (x * unit),
-                                y: origin.y + (y * unit)
-                            };
+			world.generate();
 
-				            ctx.fillStyle = region.data[x][y] ? 'black' : 'gray';
-				            ctx.fillRect(pos.x, pos.y, unit, unit);
-			            }
-                    }
-	            });
-            }
+			const size = 256;
+			const unit = size / world.regionSize;
+			const canvas = document.getElementById('canvas');
+			const ctx = canvas.getContext('2d');
 
-            document.addEventListener('keypress', (event) => {
+			canvas.width = size * 3;
+			canvas.height = size * 3;
 
-            	switch (event.which) {
-                    case 119:
-                    	world.moveNorth().then(render);
-                    	break;
-                    case 100:
-                    	world.moveEast().then(render);
-                    	break;
-                    case 115:
-                    	world.moveSouth().then(render);
-                    	break;
-                    case 97:
-                    	world.moveWest().then(render);
-                    	break;
-                }
-            });
+			function render() {
 
-            render();
+				let colors = ['gray', 'silver', 'skyblue', 'gold'];
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        </script>
-    </body>
+				Object.values(Direction.NEIGHBORS).forEach(dir => {
+
+					let x = world.position.x + dir.x;
+					let y = world.position.y + dir.y;
+					let region = world.region({ x, y });
+
+					if (!region) {
+						return;
+					}
+
+					let origin = {
+						x: (dir.x + 1) * size,
+						y: (dir.y + 1) * size
+					};
+
+					region.data.each((el, x, y) => {
+
+						let pos = {
+							x: origin.x + (x * unit),
+							y: origin.y + (y * unit)
+						};
+
+						ctx.fillStyle = colors[ el ];
+						ctx.fillRect(pos.x, pos.y, unit, unit);
+                    });
+				});
+			}
+
+			document.addEventListener('keypress', async event => {
+
+				switch (event.key) {
+					case 'w':
+						await world.moveNorth();
+						break;
+					case 'a':
+						await world.moveWest();
+						break;
+					case 's':
+						await world.moveSouth();
+						break;
+					case 'd':
+						await world.moveEast();
+						break;
+				}
+
+				if ('wasd'.includes(event.key)) {
+					world.generate();
+					render();
+				}
+			});
+
+			render();
+
+		</script>
+	</body>
 </html>
