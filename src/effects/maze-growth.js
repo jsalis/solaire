@@ -17,7 +17,7 @@ export const mazeGrowth = ({ start, replace, runFactor = 0.5, walkable = [] }) =
 			let x = node.x + (dir.x * 2);
 			let y = node.y + (dir.y * 2);
 
-			if (x < 0 || x >= data.size() || y < 0 || y >= data.size()) {
+			if (!data.hasElementAt(x, y)) {
 				return false;
 			}
 

@@ -88,8 +88,11 @@ export const DataSegment = {
 			},
 
 			toArray() {
-
 				return this.map(el => el);
+			},
+
+			hasElementAt(x, y) {
+				return x >= 0 && x < size && y >= 0 && y < size;
 			},
 
 			size() {

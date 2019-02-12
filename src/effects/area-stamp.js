@@ -7,7 +7,7 @@ export const areaStamp = ({ target, replace, area, step = 1, attempts = 1 }) => 
 	let canStamp = (x, y, width, height) => {
 		for (let i = 0; i < height; i++) {
 			for (let j = 0; j < width; j++) {
-				if (!inRange(data, x + i, y + j) || data.get(x + i, y + j) !== target) {
+				if (!data.hasElementAt(x + i, y + j) || data.get(x + i, y + j) !== target) {
 					return false;
 				}
 			}
@@ -36,7 +36,3 @@ export const areaStamp = ({ target, replace, area, step = 1, attempts = 1 }) => 
 		}
 	}
 };
-
-function inRange(data, x, y) {
-	return x >= 0 && x < data.size() && y >= 0 && y < data.size();
-}
