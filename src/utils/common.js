@@ -22,6 +22,16 @@ export function isFunction(val) {
 }
 
 /**
+ * Determines whether a value is a symbol.
+ *
+ * @param   {*} val
+ * @returns {Boolean}
+ */
+export function isSymbol(val) {
+	return typeof val === 'symbol';
+}
+
+/**
  * Determines whether a value is defined.
  *
  * @param   {*} val
@@ -29,6 +39,16 @@ export function isFunction(val) {
  */
 export function isDefined(val) {
 	return val !== undefined;
+}
+
+/**
+ * Determines whether a value is even.
+ *
+ * @param   {Number} val
+ * @returns {Boolean}
+ */
+export function isEven(val) {
+	return val % 2 === 0;
 }
 
 /**
