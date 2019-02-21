@@ -78,6 +78,24 @@ export const DataSegment = {
 				}
 			},
 
+			match(entries) {
+
+				let results = [];
+
+				for (let x = 0; x < size; x++) {
+					for (let y = 0; y < size; y++) {
+						for (let entry of entries) {
+							if (entry.matcher(x, y, this)) {
+								results.push({ x, y, key: entry.key });
+								break;
+							}
+						}
+					}
+				}
+
+				return results;
+			},
+
 			fromArray(array) {
 
 				for (let x = 0; x < size; x++) {

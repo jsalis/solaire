@@ -34,6 +34,69 @@ describe('DataSegment', () => {
 		});
 	});
 
+	describe('match', () => {
+
+		it('must invoke each matcher for each data element', () => {
+			let size = 4;
+			let data = DataSegment.create({ size });
+			let firstMatcher = jasmine.createSpy('firstMatcher').and.returnValue(false);
+			let secondMatcher = jasmine.createSpy('secondMatcher').and.returnValue(false);
+			data.match([
+				{
+					key: 'first',
+					matcher: firstMatcher
+				}, {
+					key: 'second',
+					matcher: secondMatcher
+				}
+			]);
+			expect(firstMatcher).toHaveBeenCalledTimes(size * size);
+			expect(secondMatcher).toHaveBeenCalledTimes(size * size);
+		});
+
+		it('must invoke each matcher with the element position and data segment', () => {
+			let size = 2;
+			let data = DataSegment.create({ size });
+			let matcher = jasmine.createSpy('matcher').and.returnValue(false);
+			data.match([
+				{
+					key: 'first',
+					matcher
+				}
+			]);
+			expect(matcher).toHaveBeenCalledWith(0, 0, data);
+			expect(matcher).toHaveBeenCalledWith(0, 1, data);
+			expect(matcher).toHaveBeenCalledWith(1, 0, data);
+			expect(matcher).toHaveBeenCalledWith(1, 1, data);
+		});
+
+		it('must return results containing the matched elements', () => {
+			let size = 4;
+			let data = DataSegment.create({ size });
+			data.fromArray([
+				[0, 0, 0, 2],
+				[0, 1, 0, 0],
+				[0, 1, 0, 0],
+				[0, 0, 2, 0]
+			]);
+			let results = data.match([
+				{
+					key: 'one',
+					matcher: (x, y) => data.get(x, y) === 1
+				}, {
+					key: 'two',
+					matcher: (x, y) => data.get(x, y) === 2
+				}
+			]);
+			expect(results).toEqual([
+				{ x: 0, y: 3, key: 'two' },
+				{ x: 1, y: 1, key: 'one' },
+				{ x: 2, y: 1, key: 'one' },
+				{ x: 3, y: 2, key: 'two' }
+			]);
+		});
+	});
+
 	describe('size', () => {
 
 		it('must return the size of the data segment', () => {

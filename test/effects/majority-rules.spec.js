@@ -5,7 +5,7 @@ import { DataSegment } from '../../src/data-segment';
 
 describe('majorityRules', () => {
 
-	it('must apply the effect to the data', () => {
+	it('must apply the effect to the data segment', () => {
 		let size = 4;
 		let random = randomWithSeed('If only I could be so grossly incandescent!');
 		let data = DataSegment.create({ size, random });
