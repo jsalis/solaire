@@ -49,30 +49,35 @@ export const PatternMatcher = {
 			}
 		}
 
-		return (x, y, data) => {
+		return matcherWith({ nodesExact, nodesBySymbol });
+	}
+};
 
-			for (let node of nodesExact) {
-				if (data.get(x + node.x, y + node.y) !== node.value) {
+function matcherWith({ nodesExact, nodesBySymbol }) {
+
+	return (x, y, data) => {
+
+		for (let node of nodesExact) {
+			if (data.get(x + node.x, y + node.y) !== node.value) {
+				return false;
+			}
+		}
+
+		for (let symbol of Object.getOwnPropertySymbols(nodesBySymbol)) {
+
+			let nodes = nodesBySymbol[ symbol ];
+			let val = data.get(x + nodes[0].x, y + nodes[0].y);
+
+			for (let i = 1; i < nodes.length; i++) {
+				if (data.get(x + nodes[ i ].x, y + nodes[ i ].y) !== val) {
 					return false;
 				}
 			}
+		}
 
-			for (let symbol of Object.getOwnPropertySymbols(nodesBySymbol)) {
-
-				let nodes = nodesBySymbol[ symbol ];
-				let val = data.get(x + nodes[0].x, y + nodes[0].y);
-
-				for (let i = 1; i < nodes.length; i++) {
-					if (data.get(x + nodes[ i ].x, y + nodes[ i ].y) !== val) {
-						return false;
-					}
-				}
-			}
-
-			return true;
-		};
-	}
-};
+		return true;
+	};
+}
 
 function sanitize(pattern) {
 
