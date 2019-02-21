@@ -52,7 +52,7 @@ export const PatternMatcher = {
 		return (x, y, data) => {
 
 			for (let node of nodesExact) {
-				if (data[ x + node.x ][ y + node.y ] !== node.value) {
+				if (data.get(x + node.x, y + node.y) !== node.value) {
 					return false;
 				}
 			}
@@ -60,10 +60,10 @@ export const PatternMatcher = {
 			for (let symbol of Object.getOwnPropertySymbols(nodesBySymbol)) {
 
 				let nodes = nodesBySymbol[ symbol ];
-				let val = data[ x + nodes[0].x ][ y + nodes[0].y ];
+				let val = data.get(x + nodes[0].x, y + nodes[0].y);
 
 				for (let i = 1; i < nodes.length; i++) {
-					if (data[ x + nodes[ i ].x ][ y + nodes[ i ].y ] !== val) {
+					if (data.get(x + nodes[ i ].x, y + nodes[ i ].y) !== val) {
 						return false;
 					}
 				}
