@@ -5,10 +5,9 @@
 		<title>solaire - simple example</title>
 	</head>
 	<body>
-		<canvas id="canvas"></canvas>
 		<script type="module">
 
-			import { World, Direction } from '../dist/solaire.module.js';
+			import { World, WorldRenderer } from '../dist/solaire.module.js';
 
 			const world = World.create({
 
@@ -99,48 +98,10 @@
 				}
 			});
 
-			world.generate();
-
-			const size = 256;
-			const unit = size / world.regionSize;
-			const canvas = document.getElementById('canvas');
-			const ctx = canvas.getContext('2d');
-
-			canvas.width = size * 3;
-			canvas.height = size * 3;
-
-			function render() {
-
-				let colors = ['gray', 'silver', 'skyblue', 'gold'];
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-				Object.values(Direction.NEIGHBORS).forEach(dir => {
-
-					let x = world.position.x + dir.x;
-					let y = world.position.y + dir.y;
-					let region = world.region({ x, y });
-
-					if (!region) {
-						return;
-					}
-
-					let origin = {
-						x: (dir.x + 1) * size,
-						y: (dir.y + 1) * size
-					};
-
-					region.data.each((el, x, y) => {
-
-						let pos = {
-							x: origin.x + (x * unit),
-							y: origin.y + (y * unit)
-						};
-
-						ctx.fillStyle = colors[ el ];
-						ctx.fillRect(pos.x, pos.y, unit, unit);
-                    });
-				});
-			}
+			const renderer = WorldRenderer.create(world, {
+				size: 256,
+                colors: ['gray', 'silver', 'skyblue', 'gold']
+            });
 
 			document.addEventListener('keypress', async event => {
 
@@ -161,11 +122,13 @@
 
 				if ('wasd'.includes(event.key)) {
 					world.generate();
-					render();
+					renderer.render();
 				}
 			});
 
-			render();
+			world.generate();
+			renderer.render();
+			document.body.appendChild(renderer.el());
 
 		</script>
 	</body>
