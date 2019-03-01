@@ -22,7 +22,8 @@
     "start": "serve -l 8080",
     "report-coverage": "cat ./build/coverage/lcov.info | codecov",
     "commitmsg": "validate-commit-msg",
-    "release": "standard-version"
+    "release": "standard-version",
+    "release-dry-run": "standard-version --dry-run"
   },
   "config": {
     "validate-commit-msg": {
