@@ -15,7 +15,7 @@
     "game-development"
   ],
   "scripts": {
-    "lint": "eslint src test",
+    "lint": "eslint --fix src test",
     "test": "karma start --single-run --browsers ChromeHeadless",
     "clean": "rimraf build dist",
     "build": "rollup --config",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "merge": "^1.2.1",
-    "seedrandom": "^2.4.4"
+    "seedrandom": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
