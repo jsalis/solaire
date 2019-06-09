@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "merge": "^1.2.1",
-    "seedrandom": "^3.0.0"
+    "seedrandom": "^3.0.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",
@@ -51,10 +51,10 @@
     "codecov.io": "^0.1.6",
     "eslint": "^4.19.1",
     "eslint-plugin-jasmine": "^2.10.1",
-    "husky": "^2.2.0",
-    "jasmine": "^3.3.1",
-    "jasmine-core": "^3.3.0",
-    "karma": "^3.1.4",
+    "husky": "^2.4.0",
+    "jasmine": "^3.4.0",
+    "jasmine-core": "^3.4.0",
+    "karma": "^4.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.2",
     "karma-firefox-launcher": "^1.1.0",
@@ -65,10 +65,10 @@
     "rimraf": "^2.6.3",
     "rollup": "^0.58.2",
     "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-istanbul": "^2.0.1",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "serve": "^10.1.1",
+    "serve": "^10.1.2",
     "standard-version": "^4.4.0"
   },
   "repository": {
