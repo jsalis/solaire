@@ -36,9 +36,9 @@ describe('World', () => {
 				y: { min: -1 }
 			};
 			let world = World.create(config);
-			world.moveNorth()
+			world.move(Direction.CARDINALS.N)
 				.catch(done.fail);
-			world.moveNorth()
+			world.move(Direction.CARDINALS.N)
 				.then(done.fail)
 				.catch(error => {
 					expect(error).toEqual(jasmine.any(Error));
@@ -53,9 +53,9 @@ describe('World', () => {
 				x: { max: 1 }
 			};
 			let world = World.create(config);
-			world.moveEast()
+			world.move(Direction.CARDINALS.E)
 				.catch(done.fail);
-			world.moveEast()
+			world.move(Direction.CARDINALS.E)
 				.then(done.fail)
 				.catch(error => {
 					expect(error).toEqual(jasmine.any(Error));
@@ -70,9 +70,9 @@ describe('World', () => {
 				y: { max: 1 }
 			};
 			let world = World.create(config);
-			world.moveSouth()
+			world.move(Direction.CARDINALS.S)
 				.catch(done.fail);
-			world.moveSouth()
+			world.move(Direction.CARDINALS.S)
 				.then(done.fail)
 				.catch(error => {
 					expect(error).toEqual(jasmine.any(Error));
@@ -87,9 +87,9 @@ describe('World', () => {
 				x: { min: -1 }
 			};
 			let world = World.create(config);
-			world.moveWest()
+			world.move(Direction.CARDINALS.W)
 				.catch(done.fail);
-			world.moveWest()
+			world.move(Direction.CARDINALS.W)
 				.then(done.fail)
 				.catch(error => {
 					expect(error).toEqual(jasmine.any(Error));
@@ -120,7 +120,7 @@ describe('World', () => {
 				y: { min: -1, max: 1 }
 			};
 			let world = World.create(config);
-			world.moveSouth();
+			world.move(Direction.CARDINALS.S);
 			let position = world.position;
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				let x = position.x + dir.x;
@@ -414,50 +414,6 @@ describe('World', () => {
 				.then(done)
 				.catch(done.fail);
 			expect(world.position).toEqual({ x: 1, y: -1 });
-		});
-	});
-
-	describe('moveNorth', () => {
-
-		it('must move the current position north by one unit', done => {
-			let world = World.create(config);
-			world.moveNorth()
-				.then(done)
-				.catch(done.fail);
-			expect(world.position).toEqual({ x: 0, y: -1 });
-		});
-	});
-
-	describe('moveEast', () => {
-
-		it('must move the current position east by one unit', done => {
-			let world = World.create(config);
-			world.moveEast()
-				.then(done)
-				.catch(done.fail);
-			expect(world.position).toEqual({ x: 1, y: 0 });
-		});
-	});
-
-	describe('moveSouth', () => {
-
-		it('must move the current position south by one unit', done => {
-			let world = World.create(config);
-			world.moveSouth()
-				.then(done)
-				.catch(done.fail);
-			expect(world.position).toEqual({ x: 0, y: 1 });
-		});
-	});
-
-	describe('moveWest', () => {
-
-		it('must move the current position west by one unit', done => {
-			let world = World.create(config);
-			world.moveWest()
-				.then(done)
-				.catch(done.fail);
-			expect(world.position).toEqual({ x: -1, y: 0 });
 		});
 	});
 });

@@ -7,7 +7,7 @@
 	<body>
 		<script type="module">
 
-			import { World, WorldRenderer } from '../dist/solaire.module.js';
+			import { World, WorldRenderer, Direction } from '../dist/solaire.module.js';
 
 			const world = World.create({
 
@@ -107,16 +107,16 @@
 
 				switch (event.key) {
 					case 'w':
-						await world.moveNorth();
+						await world.move(Direction.CARDINALS.N);
 						break;
 					case 'a':
-						await world.moveWest();
+						await world.move(Direction.CARDINALS.W);
 						break;
 					case 's':
-						await world.moveSouth();
+						await world.move(Direction.CARDINALS.S);
 						break;
 					case 'd':
-						await world.moveEast();
+						await world.move(Direction.CARDINALS.E);
 						break;
 				}
 

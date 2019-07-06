@@ -116,22 +116,6 @@ export const World = {
 						throw Error('World position out of bounds');
 					}
 				});
-			},
-
-			moveNorth() {
-				return this.move(Direction.CARDINALS.N);
-			},
-
-			moveEast() {
-				return this.move(Direction.CARDINALS.E);
-			},
-
-			moveSouth() {
-				return this.move(Direction.CARDINALS.S);
-			},
-
-			moveWest() {
-				return this.move(Direction.CARDINALS.W);
 			}
 		};
 	}
