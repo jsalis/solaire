@@ -341,6 +341,11 @@ describe('World', () => {
 			expect(world.region({ x: 0, y: 0 })).toBe(world.data[ 0 ][ 0 ]);
 		});
 
+		it('must support position as two arguments', () => {
+			let world = World.create(config);
+			expect(world.region(1, -1)).toBe(world.data[ 1 ][ -1 ]);
+		});
+
 		it('must return undefined if the region does not exist', () => {
 			let world = World.create(config);
 			expect(world.region({ x: 8, y: 8 })).toBe(undefined);
@@ -402,6 +407,14 @@ describe('World', () => {
 	describe('move', () => {
 
 		it('must handle a direction of zero length');
+
+		it('must support direction as two arguments', done => {
+			let world = World.create(config);
+			world.move(1, -1)
+				.then(done)
+				.catch(done.fail);
+			expect(world.position).toEqual({ x: 1, y: -1 });
+		});
 	});
 
 	describe('moveNorth', () => {

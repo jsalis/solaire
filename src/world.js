@@ -72,8 +72,9 @@ export const World = {
 				return config.regionSize;
 			},
 
-			region(pos) {
+			region(...args) {
 
+				let pos = args.length === 2 ? { x: args[0], y: args[1] } : args[0];
 				let { bounds } = config;
 
 				if (bounds.x.wrap) {
@@ -101,9 +102,10 @@ export const World = {
 				config.generate({ regions: regionGenerator, effects });
 			},
 
-			move(dir) {
+			move(...args) {
 				return attempt(() => {
 
+					let dir = args.length === 2 ? { x: args[0], y: args[1] } : args[0];
 					let { bounds } = config;
 					let current = vec2.clone(position);
 					position.x = (bounds.x.wrap ? wrap : clamp)(position.x + dir.x, bounds.x.min, bounds.x.max);
