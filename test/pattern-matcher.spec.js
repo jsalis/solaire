@@ -47,7 +47,7 @@ describe('PatternMatcher', () => {
 				[$, $, $],
 				[$, $, $]
 			]);
-			expect(fn).toThrowError('Pattern dimensions must be odd');
+			expect(fn).toThrow('Pattern dimensions must be odd');
 		});
 
 		it('must throw if the pattern width is even', () => {
@@ -56,7 +56,7 @@ describe('PatternMatcher', () => {
 				[$, $],
 				[$, $]
 			]);
-			expect(fn).toThrowError('Pattern dimensions must be odd');
+			expect(fn).toThrow('Pattern dimensions must be odd');
 		});
 	});
 });

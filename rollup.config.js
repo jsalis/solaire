@@ -18,13 +18,9 @@ export default {
 	// external: ['crypto'],
 	plugins: [
 		nodeResolve({
-			jsnext: true,
 			browser: true
 		}),
 		commonjs(),
-		babel({
-			presets: [['es2015', { 'modules': false }]],
-			plugins: ['external-helpers']
-		})
+		babel()
 	]
 };

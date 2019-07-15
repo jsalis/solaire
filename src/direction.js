@@ -33,9 +33,8 @@ Direction.ORDINALS = {
 	NW: new Direction(-1, -1)
 };
 
-Direction.NEIGHBORS = Object.assign(
-	{},
-	Direction.ORIGIN,
-	Direction.CARDINALS,
-	Direction.ORDINALS
-);
+Direction.NEIGHBORS = {
+	...Direction.ORIGIN,
+	...Direction.CARDINALS,
+	...Direction.ORDINALS
+};

@@ -1,5 +1,4 @@
 language: node_js
-sudo: required
 cache:
   directories:
     - node_modules
@@ -8,11 +7,8 @@ branches:
     - master
 node_js:
   - 8
-addons:
-  chrome: stable
 before_install:
   - npm i -g npm@^5.0.0
-  - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
 before_script:
   - npm prune
 script:

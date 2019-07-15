@@ -68,12 +68,12 @@ describe('RegionGenerator', () => {
 				Region.create({ type: 'second' })
 			];
 			let generator = RegionGenerator.create({ regions });
-			let effect = jasmine.createSpy('effect');
-			let callback = jasmine.createSpy('callback').and.returnValue(effect);
+			let effect = jest.fn();
+			let callback = jest.fn(() => effect);
 			generator.apply(callback);
 			expect(callback).toHaveBeenCalledTimes(2);
-			expect(callback.calls.argsFor(0)[0]).toBe(regions[0]);
-			expect(callback.calls.argsFor(1)[0]).toBe(regions[1]);
+			expect(callback.mock.calls[0][0]).toBe(regions[0]);
+			expect(callback.mock.calls[1][0]).toBe(regions[1]);
 		});
 
 		it('must apply only to the selected regions', () => {
@@ -82,12 +82,12 @@ describe('RegionGenerator', () => {
 				Region.create({ type: 'second' })
 			];
 			let generator = RegionGenerator.create({ regions });
-			let effect = jasmine.createSpy('effect');
-			let callback = jasmine.createSpy('callback').and.returnValue(effect);
+			let effect = jest.fn();
+			let callback = jest.fn(() => effect);
 			generator.select('second');
 			generator.apply(callback);
 			expect(callback).toHaveBeenCalledTimes(1);
-			expect(callback.calls.argsFor(0)[0]).toBe(regions[1]);
+			expect(callback.mock.calls[0][0]).toBe(regions[1]);
 		});
 
 		it('must pass region data to the effect function', () => {
@@ -96,16 +96,16 @@ describe('RegionGenerator', () => {
 				Region.create({ type: 'second' })
 			];
 			let generator = RegionGenerator.create({ regions });
-			let effect = jasmine.createSpy('effect');
-			let callback = jasmine.createSpy('callback').and.returnValue(effect);
+			let effect = jest.fn();
+			let callback = jest.fn(() => effect);
 			generator.apply(callback);
 			expect(effect).toHaveBeenCalledWith(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					data: regions[0].data
 				})
 			);
 			expect(effect).toHaveBeenCalledWith(
-				jasmine.objectContaining({
+				expect.objectContaining({
 					data: regions[1].data
 				})
 			);
@@ -117,15 +117,15 @@ describe('RegionGenerator', () => {
 				Region.create({ type: 'second' })
 			];
 			let generator = RegionGenerator.create({ regions });
-			let effect = jasmine.createSpy('effect');
-			let callback = jasmine.createSpy('callback').and.returnValue(effect);
+			let effect = jest.fn();
+			let callback = jest.fn(() => effect);
 			generator.apply(callback);
 			expect(effect).toHaveBeenCalledWith(
-				jasmine.objectContaining({
-					random: jasmine.any(Function)
+				expect.objectContaining({
+					random: expect.any(Function)
 				})
 			);
-			let { random } = effect.calls.mostRecent().args[0];
+			let { random } = effect.mock.calls[effect.mock.calls.length - 1][0];
 			expect(random()).not.toBe(random());
 		});
 
@@ -135,8 +135,8 @@ describe('RegionGenerator', () => {
 				Region.create({ type: 'second' })
 			];
 			let generator = RegionGenerator.create({ regions });
-			let effect = jasmine.createSpy('effect');
-			let callback = jasmine.createSpy('callback').and.returnValue(effect);
+			let effect = jest.fn();
+			let callback = jest.fn(() => effect);
 			let context = generator.apply(callback);
 			expect(context).toBe(generator);
 		});
@@ -150,14 +150,14 @@ describe('RegionGenerator', () => {
 				Region.create({ type: 'second' })
 			];
 			let generator = RegionGenerator.create({ regions });
-			let effect = jasmine.createSpy('effect');
-			let callback = jasmine.createSpy('callback').and.returnValue(effect);
+			let effect = jest.fn();
+			let callback = jest.fn(() => effect);
 			generator.applyTimes(2, callback);
 			expect(callback).toHaveBeenCalledTimes(4);
-			expect(callback.calls.argsFor(0)[0]).toBe(regions[0]);
-			expect(callback.calls.argsFor(1)[0]).toBe(regions[1]);
-			expect(callback.calls.argsFor(2)[0]).toBe(regions[0]);
-			expect(callback.calls.argsFor(3)[0]).toBe(regions[1]);
+			expect(callback.mock.calls[0][0]).toBe(regions[0]);
+			expect(callback.mock.calls[1][0]).toBe(regions[1]);
+			expect(callback.mock.calls[2][0]).toBe(regions[0]);
+			expect(callback.mock.calls[3][0]).toBe(regions[1]);
 		});
 
 		it('must return the context to allow method chaining', () => {
@@ -166,8 +166,8 @@ describe('RegionGenerator', () => {
 				Region.create({ type: 'second' })
 			];
 			let generator = RegionGenerator.create({ regions });
-			let effect = jasmine.createSpy('effect');
-			let callback = jasmine.createSpy('callback').and.returnValue(effect);
+			let effect = jest.fn();
+			let callback = jest.fn(() => effect);
 			let context = generator.applyTimes(2, callback);
 			expect(context).toBe(generator);
 		});

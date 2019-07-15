@@ -18,7 +18,7 @@ describe('World', () => {
 	it('must initialize regions at the origin', () => {
 		let world = World.create(config);
 		Object.values(Direction.NEIGHBORS).forEach(dir => {
-			expect(world.region(dir)).toEqual(jasmine.any(Object));
+			expect(world.region(dir)).toEqual(expect.any(Object));
 		});
 	});
 
@@ -41,7 +41,7 @@ describe('World', () => {
 			world.move(Direction.CARDINALS.N)
 				.then(done.fail)
 				.catch(error => {
-					expect(error).toEqual(jasmine.any(Error));
+					expect(error).toEqual(expect.any(Error));
 					expect(error.message).toBe('World position out of bounds');
 					done();
 				});
@@ -58,7 +58,7 @@ describe('World', () => {
 			world.move(Direction.CARDINALS.E)
 				.then(done.fail)
 				.catch(error => {
-					expect(error).toEqual(jasmine.any(Error));
+					expect(error).toEqual(expect.any(Error));
 					expect(error.message).toBe('World position out of bounds');
 					done();
 				});
@@ -75,7 +75,7 @@ describe('World', () => {
 			world.move(Direction.CARDINALS.S)
 				.then(done.fail)
 				.catch(error => {
-					expect(error).toEqual(jasmine.any(Error));
+					expect(error).toEqual(expect.any(Error));
 					expect(error.message).toBe('World position out of bounds');
 					done();
 				});
@@ -92,7 +92,7 @@ describe('World', () => {
 			world.move(Direction.CARDINALS.W)
 				.then(done.fail)
 				.catch(error => {
-					expect(error).toEqual(jasmine.any(Error));
+					expect(error).toEqual(expect.any(Error));
 					expect(error.message).toBe('World position out of bounds');
 					done();
 				});
@@ -105,7 +105,7 @@ describe('World', () => {
 				y: { min: 0, max: 0 }
 			};
 			let world = World.create(config);
-			expect(world.region({ x: 0, y: 0 })).toEqual(jasmine.any(Object));
+			expect(world.region({ x: 0, y: 0 })).toEqual(expect.any(Object));
 			Object.values(Direction.CARDINALS).forEach(dir => {
 				expect(world.region(dir)).toBe(undefined);
 			});
@@ -125,7 +125,7 @@ describe('World', () => {
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				let x = position.x + dir.x;
 				let y = position.y + dir.y;
-				let value = y > 1 ? undefined : jasmine.any(Object);
+				let value = y > 1 ? undefined : expect.any(Object);
 				expect(world.region({ x, y })).toEqual(value);
 			});
 		});
@@ -136,7 +136,7 @@ describe('World', () => {
 				y: { min: 2 }
 			};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('Minimum bounds must not be greater than zero');
+			expect(fn).toThrow('Minimum bounds must not be greater than zero');
 		});
 
 		it('must throw if the maximum bounds are invalid', () => {
@@ -145,7 +145,7 @@ describe('World', () => {
 				y: { max: -2 }
 			};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('Maximum bounds must not be less than zero');
+			expect(fn).toThrow('Maximum bounds must not be less than zero');
 		});
 
 		it('must throw if the "x" minimum bound is undefined with wrap enabled', () => {
@@ -153,7 +153,7 @@ describe('World', () => {
 				x: { max: 1, wrap: true }
 			};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('Wrapped bounds must define a minimum and maximum');
+			expect(fn).toThrow('Wrapped bounds must define a minimum and maximum');
 		});
 
 		it('must throw if the "x" maximum bound is undefined with wrap enabled', () => {
@@ -161,7 +161,7 @@ describe('World', () => {
 				x: { min: -1, wrap: true }
 			};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('Wrapped bounds must define a minimum and maximum');
+			expect(fn).toThrow('Wrapped bounds must define a minimum and maximum');
 		});
 
 		it('must throw if the "y" minimum bound is undefined with wrap enabled', () => {
@@ -169,7 +169,7 @@ describe('World', () => {
 				y: { max: 1, wrap: true }
 			};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('Wrapped bounds must define a minimum and maximum');
+			expect(fn).toThrow('Wrapped bounds must define a minimum and maximum');
 		});
 
 		it('must throw if the "y" maximum bound is undefined with wrap enabled', () => {
@@ -177,7 +177,7 @@ describe('World', () => {
 				y: { min: -1, wrap: true }
 			};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('Wrapped bounds must define a minimum and maximum');
+			expect(fn).toThrow('Wrapped bounds must define a minimum and maximum');
 		});
 	});
 
@@ -208,11 +208,11 @@ describe('World', () => {
 		it('must throw if no regions are given', () => {
 			config.regions = {};
 			let fn = () => World.create(config);
-			expect(fn).toThrowError('No regions defined');
+			expect(fn).toThrow('No regions defined');
 		});
 
 		it('must initialize each region using the given function', () => {
-			let init = jasmine.createSpy('init');
+			let init = jest.fn();
 			World.create({
 				regions: {
 					cave: {
@@ -224,9 +224,11 @@ describe('World', () => {
 		});
 
 		it('must pass a random number generator to each region initializer', () => {
-			let init = jasmine.createSpy('init').and.callFake(({ data, random }) => {
-				data.fill(random);
-			});
+			let init = jest.fn(
+				({ data, random }) => {
+					data.fill(random);
+				}
+			);
 			let world = World.create({
 				regionSize: 3,
 				regions: {
@@ -277,7 +279,7 @@ describe('World', () => {
 				cave: {},
 				dungeon: {}
 			};
-			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
+			let chooseRegion = jest.fn(
 				({ position, regionTypes }) => (position.x + position.y === 0) ? regionTypes[0] : regionTypes[1]
 			);
 			let world = World.create({
@@ -291,7 +293,7 @@ describe('World', () => {
 					regionTypes: Object.keys(regions)
 				});
 				expect(world.region(dir)).toEqual(
-					jasmine.objectContaining({ type })
+					expect.objectContaining({ type })
 				);
 			});
 		});
@@ -302,7 +304,7 @@ describe('World', () => {
 				second: {},
 				third: {}
 			};
-			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
+			let chooseRegion = jest.fn(
 				() => [
 					{ value: 'first', weight: 1 },
 					{ value: 'second', weight: 1 },
@@ -316,7 +318,7 @@ describe('World', () => {
 			expect(chooseRegion).toHaveBeenCalledTimes(9);
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				expect(world.region(dir)).not.toEqual(
-					jasmine.objectContaining({ type: 'third' })
+					expect.objectContaining({ type: 'third' })
 				);
 			});
 		});
@@ -326,11 +328,9 @@ describe('World', () => {
 				cave: {},
 				dungeon: {}
 			};
-			let chooseRegion = jasmine.createSpy('chooseRegion').and.callFake(
-				() => 'mountains'
-			);
+			let chooseRegion = jest.fn(() => 'mountains');
 			let fn = () => World.create({ regions, chooseRegion });
-			expect(fn).toThrowError('Invalid region type "mountains" has not been defined');
+			expect(fn).toThrow('Invalid region type "mountains" has not been defined');
 		});
 	});
 
@@ -381,15 +381,15 @@ describe('World', () => {
 	describe('generate', () => {
 
 		it('must pass a list of regions that are the neighbors to the current position', () => {
-			config.generate = jasmine.createSpy('generate');
+			config.generate = jest.fn();
 			let world = World.create(config);
 			world.generate();
 			expect(config.generate).toHaveBeenCalledWith(
-				jasmine.objectContaining({
-					regions: jasmine.any(Object)
+				expect.objectContaining({
+					regions: expect.any(Object)
 				})
 			);
-			let { regions } = config.generate.calls.mostRecent().args[0];
+			let { regions } = config.generate.mock.calls[config.generate.mock.calls.length - 1][0];
 			expect(regions.get()).toEqual([
 				world.region({ x: 0, y: 0 }),
 				world.region({ x: 0, y: -1 }),
@@ -406,7 +406,7 @@ describe('World', () => {
 
 	describe('move', () => {
 
-		it('must handle a direction of zero length');
+		it.todo('must handle a direction of zero length');
 
 		it('must support direction as two arguments', done => {
 			let world = World.create(config);

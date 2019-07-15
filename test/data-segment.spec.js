@@ -39,8 +39,8 @@ describe('DataSegment', () => {
 		it('must invoke each matcher for each data element', () => {
 			let size = 4;
 			let data = DataSegment.create({ size });
-			let firstMatcher = jasmine.createSpy('firstMatcher').and.returnValue(false);
-			let secondMatcher = jasmine.createSpy('secondMatcher').and.returnValue(false);
+			let firstMatcher = jest.fn(() => false);
+			let secondMatcher = jest.fn(() => false);
 			data.match([
 				{
 					key: 'first',
@@ -57,7 +57,7 @@ describe('DataSegment', () => {
 		it('must invoke each matcher with the element position and data segment', () => {
 			let size = 2;
 			let data = DataSegment.create({ size });
-			let matcher = jasmine.createSpy('matcher').and.returnValue(false);
+			let matcher = jest.fn(() => false);
 			data.match([
 				{
 					key: 'first',
