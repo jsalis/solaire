@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<title>solaire - simple example</title>
+		<title>solaire - simple canvas example</title>
 	</head>
 	<body>
 		<script type="module">
@@ -14,7 +14,7 @@
 				seed: 'black sabbath iron maiden judas priest',
 
 				bounds: {
-                    x: { min: -6, max: 6, wrap: true },
+					x: { min: -6, max: 6, wrap: true },
 					y: { min: -6, max: 6, wrap: true }
 				},
 
@@ -100,8 +100,8 @@
 
 			const renderer = WorldRenderer.create(world, {
 				size: 256,
-                colors: ['gray', 'silver', 'skyblue', 'gold']
-            });
+				colors: ['gray', 'silver', 'skyblue', 'gold']
+			});
 
 			document.addEventListener('keypress', async event => {
 
@@ -129,7 +129,6 @@
 			world.generate();
 			renderer.render();
 			document.body.appendChild(renderer.el());
-
 		</script>
 	</body>
 </html>
