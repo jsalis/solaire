@@ -1,7 +1,7 @@
 {
   "name": "solaire",
   "version": "0.1.0",
-  "description": "The grossly incandescent procedural generation framework",
+  "description": "The grossly incandescent procedural world generator",
   "main": "dist/solaire.js",
   "jsnext:main": "dist/solaire.module.js",
   "module": "dist/solaire.module.js",
