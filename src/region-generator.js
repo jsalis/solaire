@@ -6,11 +6,12 @@ export const RegionGenerator = {
 	/**
 	 * Creates a new region generator object.
 	 *
+	 * @param   {Array} regionTypes
 	 * @param   {Array} regions
 	 * @param   {*}     seed
 	 * @returns {Object}
 	 */
-	create({ regions, seed }) {
+	create({ regionTypes, regions, seed }) {
 
 		let selection = regions;
 
@@ -23,6 +24,12 @@ export const RegionGenerator = {
 			select(types) {
 
 				types = Array.isArray(types) ? types : [ types ];
+				types.forEach(type => {
+					if (!regionTypes.includes(type)) {
+						throw Error(`Invalid region type "${ type }" has not been defined`);
+					}
+				});
+
 				selection = regions.filter(region => types.includes(region.type));
 
 				return this;

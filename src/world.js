@@ -90,6 +90,7 @@ export const World = {
 
 			generate() {
 
+				let regionTypes = Object.keys(config.regions);
 				let regions = Object.values(Direction.NEIGHBORS)
 					.map(dir => {
 						let pos = vec2.add(position, dir);
@@ -97,7 +98,7 @@ export const World = {
 					})
 					.filter(Boolean);
 
-				let regionGenerator = RegionGenerator.create({ regions, seed });
+				let regionGenerator = RegionGenerator.create({ regionTypes, regions, seed });
 
 				config.generate({ regions: regionGenerator, effects });
 			},

@@ -7,11 +7,12 @@ describe('RegionGenerator', () => {
 	describe('get', () => {
 
 		it('must return the list of regions', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			expect(generator.get()).toEqual(regions);
 		});
 	});
@@ -19,13 +20,14 @@ describe('RegionGenerator', () => {
 	describe('select', () => {
 
 		it('must select regions that match a given type', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' }),
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			generator.select('first');
 			expect(generator.get()).toEqual([
 				regions[0],
@@ -34,13 +36,14 @@ describe('RegionGenerator', () => {
 		});
 
 		it('must select regions that match given list of types', () => {
+			let regionTypes = ['first', 'second', 'third'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' }),
 				Region.create({ type: 'third' }),
 				Region.create({ type: 'first' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			generator.select(['first', 'third']);
 			expect(generator.get()).toEqual([
 				regions[0],
@@ -49,12 +52,26 @@ describe('RegionGenerator', () => {
 			]);
 		});
 
+		it('must throw if an invalid region type is selected', () => {
+			let regionTypes = ['first', 'second'];
+			let regions = [
+				Region.create({ type: 'first' }),
+				Region.create({ type: 'second' }),
+				Region.create({ type: 'first' }),
+				Region.create({ type: 'second' })
+			];
+			let generator = RegionGenerator.create({ regionTypes, regions });
+			let fn = () => generator.select(['first', 'third']);
+			expect(fn).toThrow('Invalid region type "third" has not been defined');
+		});
+
 		it('must return the context to allow method chaining', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			let context = generator.select('first');
 			expect(context).toBe(generator);
 		});
@@ -63,11 +80,12 @@ describe('RegionGenerator', () => {
 	describe('apply', () => {
 
 		it('must invoke the callback for each region', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			let effect = jest.fn();
 			let callback = jest.fn(() => effect);
 			generator.apply(callback);
@@ -77,11 +95,12 @@ describe('RegionGenerator', () => {
 		});
 
 		it('must apply only to the selected regions', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			let effect = jest.fn();
 			let callback = jest.fn(() => effect);
 			generator.select('second');
@@ -91,11 +110,12 @@ describe('RegionGenerator', () => {
 		});
 
 		it('must pass region data to the effect function', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			let effect = jest.fn();
 			let callback = jest.fn(() => effect);
 			generator.apply(callback);
@@ -112,11 +132,12 @@ describe('RegionGenerator', () => {
 		});
 
 		it('must pass a random number generator to the effect function', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			let effect = jest.fn();
 			let callback = jest.fn(() => effect);
 			generator.apply(callback);
@@ -130,11 +151,12 @@ describe('RegionGenerator', () => {
 		});
 
 		it('must return the context to allow method chaining', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			let effect = jest.fn();
 			let callback = jest.fn(() => effect);
 			let context = generator.apply(callback);
@@ -145,11 +167,12 @@ describe('RegionGenerator', () => {
 	describe('applyTimes', () => {
 
 		it('must invoke the callback multiple times for each region', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			let effect = jest.fn();
 			let callback = jest.fn(() => effect);
 			generator.applyTimes(2, callback);
@@ -161,11 +184,12 @@ describe('RegionGenerator', () => {
 		});
 
 		it('must return the context to allow method chaining', () => {
+			let regionTypes = ['first', 'second'];
 			let regions = [
 				Region.create({ type: 'first' }),
 				Region.create({ type: 'second' })
 			];
-			let generator = RegionGenerator.create({ regions });
+			let generator = RegionGenerator.create({ regionTypes, regions });
 			let effect = jest.fn();
 			let callback = jest.fn(() => effect);
 			let context = generator.applyTimes(2, callback);
