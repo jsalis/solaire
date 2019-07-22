@@ -107,15 +107,21 @@ export const World = {
 				return attempt(() => {
 
 					let dir = args.length === 2 ? { x: args[0], y: args[1] } : args[0];
+
+					if (dir.x === 0 && dir.y === 0) {
+						return;
+					}
+
 					let { bounds } = config;
 					let current = vec2.clone(position);
 					position.x = (bounds.x.wrap ? wrap : clamp)(position.x + dir.x, bounds.x.min, bounds.x.max);
 					position.y = (bounds.y.wrap ? wrap : clamp)(position.y + dir.y, bounds.y.min, bounds.y.max);
-					initialize(data, position, config);
 
 					if (vec2.equals(position, current)) {
 						throw Error('World position out of bounds');
 					}
+
+					initialize(data, position, config);
 				});
 			}
 		};

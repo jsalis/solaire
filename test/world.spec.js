@@ -406,7 +406,13 @@ describe('World', () => {
 
 	describe('move', () => {
 
-		it.todo('must handle a direction of zero length');
+		it('must handle a direction of zero length', done => {
+			let world = World.create(config);
+			world.move(Direction.ORIGIN.C)
+				.then(done)
+				.catch(done.fail);
+			expect(world.position).toEqual({ x: 0, y: 0 });
+		});
 
 		it('must support direction as two arguments', done => {
 			let world = World.create(config);
