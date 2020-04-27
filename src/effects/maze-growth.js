@@ -14,7 +14,7 @@ export const mazeGrowth = ({ start, replace, runFactor = 0.5, walkable = [] }) =
 		let node = nodes[ nodes.length - 1 ];
 		let validDirs = Object.values(Direction.CARDINALS).filter(dir => {
 
-			let x = node.x + (dir.x * 2);
+			let x = node.x + (dir.x * 2); // TODO step
 			let y = node.y + (dir.y * 2);
 
 			if (!data.hasElementAt(x, y)) {

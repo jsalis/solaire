@@ -7,7 +7,7 @@ import { isDefined } from './common';
  * Creates a pseudo-random number generator with a given seed.
  *
  * @param   {*} seed
- * @returns {Object}
+ * @returns {Function}
  */
 export function randomWithSeed(seed) {
 

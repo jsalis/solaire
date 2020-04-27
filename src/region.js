@@ -12,6 +12,7 @@ export const Region = {
 		return {
 			type: config.type,
 			position: config.position,
+			mutations: {},
 			data: []
 		};
 	}

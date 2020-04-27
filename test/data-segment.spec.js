@@ -4,6 +4,28 @@ import { randomWithSeed } from '../src/utils/random';
 
 describe('DataSegment', () => {
 
+	describe('mutate', () => {
+
+		it('must mutate and set the element to the given value', () => {
+			let size = 2;
+			let data = DataSegment.create({ size });
+			data.mutate(0, 0, 4);
+			data.mutate(0, 1, 3);
+			data.mutate(1, 0, 2);
+			data.mutate(1, 1, 1);
+			expect(data.toArray()).toEqual([
+				[4, 3],
+				[2, 1]
+			]);
+			expect(data.mutations()).toEqual({
+				'0.0': 4,
+				'0.1': 3,
+				'1.0': 2,
+				'1.1': 1
+			});
+		});
+	});
+
 	describe('fill', () => {
 
 		it('must set each element to the given value', () => {
@@ -103,6 +125,16 @@ describe('DataSegment', () => {
 			let size = 8;
 			let data = DataSegment.create({ size });
 			expect(data.size()).toBe(size);
+		});
+	});
+
+	describe('mutations', () => {
+
+		it('must return a reference to the mutations object', () => {
+			let size = 3;
+			let mutations = {};
+			let data = DataSegment.create({ size, mutations });
+			expect(data.mutations()).toBe(mutations);
 		});
 	});
 });

@@ -96,11 +96,12 @@ export const World = {
 						let pos = vec2.add(position, dir);
 						return this.region(pos);
 					})
-					.filter(Boolean);
+					.filter(x => x);
 
 				let regionGenerator = RegionGenerator.create({ regionTypes, regions, seed });
 
 				config.generate({ regions: regionGenerator, effects });
+				mutate(data, position, config);
 			},
 
 			move(...args) {
@@ -202,7 +203,8 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 				random: randomWithSeed([ seed, pos ]),
 				regions: data,
 				position: pos,
-				bounds: bounds
+				bounds: bounds,
+				mutations: region.mutations
 			});
 
 			if (isFunction(regions[ region.type ].init)) {
@@ -211,6 +213,31 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 					random: randomWithSeed([ seed, pos ])
 				});
 			}
+		}
+	});
+}
+
+function mutate(data, position, { bounds }) {
+
+	Object.values(Direction.NEIGHBORS).forEach(dir => {
+
+		let pos = vec2.add(position, dir);
+
+		if (bounds.x.wrap) {
+			pos.x = wrap(pos.x, bounds.x.min, bounds.x.max);
+		}
+
+		if (bounds.y.wrap) {
+			pos.y = wrap(pos.y, bounds.y.min, bounds.y.max);
+		}
+
+		let region = data[ pos.x ] && data[ pos.x ][ pos.y ];
+
+		if (region) {
+			Object.entries(region.mutations).forEach(([ key, val ]) => {
+				let [ x, y ] = key.split('.');
+				region.data.set(x, y, val);
+			});
 		}
 	});
 }

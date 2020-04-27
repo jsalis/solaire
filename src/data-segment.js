@@ -1,5 +1,5 @@
 
-import { isFunction, isDefined, wrap } from './utils/common';
+import { isFunction, wrap } from './utils/common';
 import { randomFrom } from './utils/random';
 
 export const DataSegment = {
@@ -12,11 +12,13 @@ export const DataSegment = {
 	 * @param   {Array}    [regions]
 	 * @param   {Object}   [position]
 	 * @param   {Object}   [bounds]
+	 * @param   {Object}   [mutations]
 	 * @returns {Object}
 	 */
-	create({ size, random, regions, position, bounds }) {
+	create({ size, random, regions, position, bounds, mutations }) {
 
 		let data = dataWithSize(size);
+		let muta = mutations || {};
 
 		return {
 
@@ -25,7 +27,11 @@ export const DataSegment = {
 				if (x >= 0 && x < size && y >= 0 && y < size) {
 					return data[ x ][ y ];
 				} else if (regions) {
-					return localize(bounds, regions, position, x, y);
+					let local = localize(bounds, regions, position, x, y);
+
+					if (local) {
+						return local.region.data.get(local.x, local.y);
+					}
 				}
 			},
 
@@ -34,7 +40,25 @@ export const DataSegment = {
 				if (x >= 0 && x < size && y >= 0 && y < size) {
 					data[ x ][ y ] = val;
 				} else if (regions) {
-					localize(bounds, regions, position, x, y, val);
+					let local = localize(bounds, regions, position, x, y);
+
+					if (local) {
+						local.region.data.set(local.x, local.y, val);
+					}
+				}
+			},
+
+			mutate(x, y, val) {
+
+				if (x >= 0 && x < size && y >= 0 && y < size) {
+					muta[ `${ x }.${ y }` ] = val;
+					data[ x ][ y ] = val;
+				} else if (regions) {
+					let local = localize(bounds, regions, position, x, y);
+
+					if (local) {
+						local.region.data.mutate(local.x, local.y, val);
+					}
 				}
 			},
 
@@ -115,6 +139,10 @@ export const DataSegment = {
 
 			size() {
 				return size;
+			},
+
+			mutations() {
+				return muta;
 			}
 		};
 	}
@@ -132,7 +160,7 @@ function dataWithSize(size, val) {
 	return data;
 }
 
-function localize(bounds, regions, position, x, y, val) {
+function localize(bounds, regions, position, x, y) {
 
 	let region = regions[ position.x ][ position.y ];
 	let local = { x: position.x, y: position.y };
@@ -162,14 +190,11 @@ function localize(bounds, regions, position, x, y, val) {
 
 	let localRegion = regions[ local.x ] && regions[ local.x ][ local.y ];
 
-	if (isDefined(val)) {
-
-		return localRegion && localRegion.data.set(x, y, val);
-
-	} else {
-
-		return localRegion && localRegion.data.get(x, y);
+	if (localRegion) {
+		return { region: localRegion, x, y };
 	}
+
+	return null;
 }
 
 function compareIndex(data, index) {

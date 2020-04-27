@@ -126,6 +126,18 @@
 				}
 			});
 
+			renderer.el().addEventListener('click', event => {
+
+				let { width, height } = renderer.el();
+				let units = world.regionSize * 3;
+				let x = Math.floor((event.offsetX / width) * units);
+				let y = Math.floor((event.offsetY / height) * units);
+				let region = world.region(world.position.x - 1, world.position.y - 1);
+
+				region.data.mutate(x, y, 1);
+				renderer.render();
+			});
+
 			world.generate();
 			renderer.render();
 			document.body.appendChild(renderer.el());
