@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/jsalis/solaire/compare/v0.1.0...v0.2.0) (2020-04-27)
+
+
+### Bug Fixes
+
+* do not throw when moving in a direction of zero length ([b4ecb5e](https://github.com/jsalis/solaire/commit/b4ecb5e))
+
+
+### Build System
+
+* **deps-dev:** bump acorn from 6.2.0 to 6.4.1 ([#4](https://github.com/jsalis/solaire/issues/4)) ([89f32d9](https://github.com/jsalis/solaire/commit/89f32d9))
+* **deps-dev:** bump codecov from 3.5.0 to 3.6.5 ([#3](https://github.com/jsalis/solaire/issues/3)) ([e54ffcb](https://github.com/jsalis/solaire/commit/e54ffcb))
+* run linter on commit ([b7524c6](https://github.com/jsalis/solaire/commit/b7524c6))
+* **deps:** bump eslint-utils from 1.4.0 to 1.4.3 ([17b537e](https://github.com/jsalis/solaire/commit/17b537e))
+* **deps:** bump handlebars from 4.1.2 to 4.5.3 ([6a667a4](https://github.com/jsalis/solaire/commit/6a667a4))
+
+
+### Features
+
+* region generator must throw if an invalid region type is selected ([6b183e0](https://github.com/jsalis/solaire/commit/6b183e0))
+* support persistent mutations to data segment ([ab430d1](https://github.com/jsalis/solaire/commit/ab430d1))
+
+
+
 ## 0.1.0 (2019-07-15)
 
 
