@@ -16,14 +16,11 @@ export const DataSegment = {
 	 * @returns {Object}
 	 */
 	create({ size, random, regions, position, bounds, mutations }) {
-
 		let data = dataWithSize(size);
 		let muta = mutations || {};
 
 		return {
-
 			get(x, y) {
-
 				if (x >= 0 && x < size && y >= 0 && y < size) {
 					return data[ x ][ y ];
 				} else if (regions) {
@@ -36,7 +33,6 @@ export const DataSegment = {
 			},
 
 			set(x, y, val) {
-
 				if (x >= 0 && x < size && y >= 0 && y < size) {
 					data[ x ][ y ] = val;
 				} else if (regions) {
@@ -49,7 +45,6 @@ export const DataSegment = {
 			},
 
 			mutate(x, y, val) {
-
 				if (x >= 0 && x < size && y >= 0 && y < size) {
 					muta[ `${ x }.${ y }` ] = val;
 					data[ x ][ y ] = val;
@@ -63,7 +58,6 @@ export const DataSegment = {
 			},
 
 			each(fn) {
-
 				for (let x = 0; x < size; x++) {
 					for (let y = 0; y < size; y++) {
 						fn(data[ x ][ y ], x, y);
@@ -72,7 +66,6 @@ export const DataSegment = {
 			},
 
 			map(fn) {
-
 				return data.map((dim, x) => (
 					dim.map((el, y) => (
 						isFunction(fn) ? fn(el, x, y) : fn
@@ -81,7 +74,6 @@ export const DataSegment = {
 			},
 
 			fill(val) {
-
 				for (let x = 0; x < size; x++) {
 					for (let y = 0; y < size; y++) {
 						data[ x ][ y ] = isFunction(val)
@@ -92,7 +84,6 @@ export const DataSegment = {
 			},
 
 			randomize(entries) {
-
 				let fn = randomFrom(entries, random);
 
 				for (let x = 0; x < size; x++) {
@@ -103,7 +94,6 @@ export const DataSegment = {
 			},
 
 			match(entries) {
-
 				let results = [];
 
 				for (let x = 0; x < size; x++) {
@@ -121,7 +111,6 @@ export const DataSegment = {
 			},
 
 			fromArray(array) {
-
 				for (let x = 0; x < size; x++) {
 					for (let y = 0; y < size; y++) {
 						data[ x ][ y ] = array[ x ][ y ];
@@ -149,19 +138,19 @@ export const DataSegment = {
 };
 
 function dataWithSize(size, val) {
-
 	let data = [];
+
 	for (let x = 0; x < size; x++) {
 		data[ x ] = [];
 		for (let y = 0; y < size; y++) {
 			data[ x ][ y ] = val;
 		}
 	}
+
 	return data;
 }
 
 function localize(bounds, regions, position, x, y) {
-
 	let region = regions[ position.x ][ position.y ];
 	let local = { x: position.x, y: position.y };
 	let check = compareIndex(region.data, x);

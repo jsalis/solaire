@@ -8,7 +8,6 @@ export const Region = {
 	 * @returns {Object}
 	 */
 	create(config) {
-
 		return {
 			type: config.type,
 			position: config.position,

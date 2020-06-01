@@ -2,7 +2,6 @@
 import { isFunction } from '../utils/common';
 
 export const areaStamp = ({ target, replace, area, step = 1, attempts = 1 }) => ({ data, random }) => {
-
 	let range = area.max - area.min;
 	let canStamp = (x, y, width, height) => {
 		for (let i = 0; i < height; i++) {
@@ -16,7 +15,6 @@ export const areaStamp = ({ target, replace, area, step = 1, attempts = 1 }) => 
 	};
 
 	while (attempts > 0) {
-
 		let x = Math.floor(random() * (data.size() - 1) / step) * step + 1;
 		let y = Math.floor(random() * (data.size() - 1) / step) * step + 1;
 		let width = Math.floor(random() * (range - 1) / step) * step + area.min;

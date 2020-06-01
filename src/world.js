@@ -39,7 +39,6 @@ export const World = {
 	 * @returns {Object}
 	 */
 	create(config) {
-
 		config = merge.recursive(true, DEFAULT_CONFIG, config);
 
 		let { seed } = randomWithSeed(config.seed);
@@ -50,7 +49,6 @@ export const World = {
 		initialize(data, position, config);
 
 		return {
-
 			get data() {
 				return data;
 			},
@@ -72,7 +70,6 @@ export const World = {
 			},
 
 			region(...args) {
-
 				let pos = args.length === 2 ? { x: args[0], y: args[1] } : args[0];
 				let { bounds } = config;
 
@@ -88,7 +85,6 @@ export const World = {
 			},
 
 			generate() {
-
 				let regionTypes = Object.keys(config.regions);
 				let regions = Object.values(Direction.NEIGHBORS)
 					.map(dir => {
@@ -105,7 +101,6 @@ export const World = {
 
 			move(...args) {
 				return attempt(() => {
-
 					let dir = args.length === 2 ? { x: args[0], y: args[1] } : args[0];
 
 					if (dir.x === 0 && dir.y === 0) {
@@ -180,7 +175,6 @@ function createDataObject({ initialData, bounds, regions, regionSize, seed }) {
 }
 
 function sanitize({ bounds, regions }) {
-
 	if (bounds.x.min > 0 || bounds.y.min > 0) {
 		throw Error('Minimum bounds must not be greater than zero');
 	}
@@ -203,9 +197,7 @@ function sanitize({ bounds, regions }) {
 }
 
 function initialize(data, position, { bounds, regions, chooseRegion, regionSize, seed }) {
-
 	Object.values(Direction.NEIGHBORS).forEach(dir => {
-
 		let regionTypes = Object.keys(regions);
 		let min = { x: bounds.x.min, y: bounds.y.min };
 		let max = { x: bounds.x.max, y: bounds.y.max };
@@ -220,11 +212,9 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 		}
 
 		if (vec2.intersects(pos, min, max)) {
-
 			data[ pos.x ] = data[ pos.x ] || {};
 
 			if (!data[ pos.x ][ pos.y ]) {
-
 				let random = randomWithSeed([ seed, pos ]);
 				let type = chooseRegion({
 					position: pos,
@@ -268,9 +258,7 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 }
 
 function mutate(data, position, { bounds }) {
-
 	Object.values(Direction.NEIGHBORS).forEach(dir => {
-
 		let pos = vec2.add(position, dir);
 
 		if (bounds.x.wrap) {

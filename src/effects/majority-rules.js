@@ -3,13 +3,10 @@ import { isDefined } from '../utils/common';
 import { Direction } from '../direction';
 
 export const majorityRules = () => ({ data }) => {
-
 	return data.map((el, x, y) => {
-
 		let neighborCount = {};
 
 		Object.values(Direction.NEIGHBORS).forEach(dir => {
-
 			let el = data.get(x + dir.x, y + dir.y);
 
 			if (!isDefined(el)) {

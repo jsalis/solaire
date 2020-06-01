@@ -10,7 +10,6 @@ import { isDefined } from './common';
  * @returns {Function}
  */
 export function randomWithSeed(seed) {
-
 	return seedRandom(seed, {
 		pass(random, seed) {
 			random.seed = seed;
@@ -27,7 +26,6 @@ export function randomWithSeed(seed) {
  * @returns {Function}
  */
 export function randomFrom(entries, random) {
-
 	let values = entries.map(el => isDefined(el.value) ? el.value : el);
 	let weights = entries.map(el => isDefined(el.weight) ? el.weight : 1);
 	let intervals = weights.reduce((array, val, i) => {

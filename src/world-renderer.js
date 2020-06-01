@@ -11,7 +11,6 @@ export const WorldRenderer = {
 	 * @returns {Object}
 	 */
 	create(world, { size, colors }) {
-
 		const canvas = document.createElement('canvas');
 		const ctx = canvas.getContext('2d');
 		const unit = size / world.regionSize;
@@ -20,17 +19,14 @@ export const WorldRenderer = {
 		canvas.height = size * 3;
 
 		return {
-
 			el() {
 				return canvas;
 			},
 
 			render() {
-
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 				Object.values(Direction.NEIGHBORS).forEach(dir => {
-
 					let x = world.position.x + dir.x;
 					let y = world.position.y + dir.y;
 					let region = world.region({ x, y });
@@ -45,7 +41,6 @@ export const WorldRenderer = {
 					};
 
 					region.data.each((el, x, y) => {
-
 						let pos = {
 							x: origin.x + (x * unit),
 							y: origin.y + (y * unit)

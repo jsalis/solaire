@@ -12,17 +12,14 @@ export const RegionGenerator = {
 	 * @returns {Object}
 	 */
 	create({ regionTypes, regions, seed }) {
-
 		let selection = regions;
 
 		return {
-
 			get() {
 				return [ ...selection ];
 			},
 
 			select(types) {
-
 				types = Array.isArray(types) ? types : [ types ];
 				types.forEach(type => {
 					if (!regionTypes.includes(type)) {
@@ -36,7 +33,6 @@ export const RegionGenerator = {
 			},
 
 			apply(callback) {
-
 				let nextData = selection.map(region => {
 					let effect = callback(region);
 					let { data } = region;
@@ -59,7 +55,6 @@ export const RegionGenerator = {
 			},
 
 			applyTimes(count, callback) {
-
 				for (let i = 0; i < count; i++) {
 					this.apply(callback);
 				}

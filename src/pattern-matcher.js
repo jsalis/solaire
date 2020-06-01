@@ -15,8 +15,8 @@ export const PatternMatcher = {
 	 * @returns {Function}
 	 */
 	create(factory) {
-
 		let symbols = [];
+
 		for (let i = 0; i < factory.length; i++) {
 			symbols.push(Symbol(i));
 		}
@@ -33,7 +33,6 @@ export const PatternMatcher = {
 
 		for (let x = 0; x < width; x++) {
 			for (let y = 0; y < height; y++) {
-
 				let el = pattern[ x ][ y ];
 
 				if (el === $) {
@@ -54,9 +53,7 @@ export const PatternMatcher = {
 };
 
 function matcherWith({ nodesExact, nodesBySymbol }) {
-
 	return (x, y, data) => {
-
 		for (let node of nodesExact) {
 			if (data.get(x + node.x, y + node.y) !== node.value) {
 				return false;
@@ -64,7 +61,6 @@ function matcherWith({ nodesExact, nodesBySymbol }) {
 		}
 
 		for (let symbol of Object.getOwnPropertySymbols(nodesBySymbol)) {
-
 			let nodes = nodesBySymbol[ symbol ];
 			let val = data.get(x + nodes[0].x, y + nodes[0].y);
 
@@ -80,7 +76,6 @@ function matcherWith({ nodesExact, nodesBySymbol }) {
 }
 
 function sanitize(pattern) {
-
 	if (isEven(pattern.length)) {
 		throw Error('Pattern dimensions must be odd');
 	}
