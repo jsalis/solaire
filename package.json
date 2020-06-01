@@ -41,10 +41,6 @@
       "git add"
     ]
   },
-  "engines": {
-    "node": "6.x",
-    "npm": "3.x"
-  },
   "dependencies": {
     "merge": "^1.2.1",
     "seedrandom": "^3.0.1"

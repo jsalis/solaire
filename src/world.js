@@ -3,7 +3,7 @@ import merge from 'merge';
 
 import * as vec2 from './utils/vec2';
 import * as effects from './effects';
-import { attempt, clamp, wrap, isFunction } from './utils/common';
+import { attempt, clamp, wrap, isFunction, deepEntries } from './utils/common';
 import { randomWithSeed, randomFrom } from './utils/random';
 import { Direction } from './direction';
 import { DataSegment } from './data-segment';
@@ -14,20 +14,19 @@ import { RegionGenerator } from './region-generator';
  * @type {Object} The default world config.
  */
 const DEFAULT_CONFIG = {
-
 	bounds: {
 		x: { min: -Infinity, max: Infinity, wrap: false },
 		y: { min: -Infinity, max: Infinity, wrap: false }
 	},
-
+	position: {
+		x: 0,
+		y: 0
+	},
 	seed: null,
-
+	initialData: {},
 	regions: {},
-
 	regionSize: 32,
-
 	chooseRegion: ({ regionTypes }) => regionTypes,
-
 	generate: () => {}
 };
 
@@ -44,8 +43,8 @@ export const World = {
 		config = merge.recursive(true, DEFAULT_CONFIG, config);
 
 		let { seed } = randomWithSeed(config.seed);
-		let position = { x: 0, y: 0 };
-		let data = {};
+		let position = vec2.clone(config.position);
+		let data = createDataObject(config);
 
 		sanitize(config);
 		initialize(data, position, config);
@@ -124,10 +123,61 @@ export const World = {
 
 					initialize(data, position, config);
 				});
+			},
+
+			serialize() {
+				let { bounds, regionSize } = config;
+				let initialData = deepEntries(data).reduce((result, [x, y, region]) => {
+					result[ x ] = result[ x ] || {};
+					result[ x ][ y ] = {
+						type: region.type,
+						position: region.position,
+						mutations: region.mutations
+					};
+					return result;
+				}, {});
+
+				return {
+					seed,
+					position,
+					bounds,
+					regionSize,
+					initialData
+				};
 			}
 		};
 	}
 };
+
+function createDataObject({ initialData, bounds, regions, regionSize, seed }) {
+	return deepEntries(initialData).reduce((result, [x, y, config]) => {
+		const region = Region.create({
+			type: config.type,
+			position: config.position,
+			mutations: config.mutations
+		});
+
+		region.data = DataSegment.create({
+			size: regionSize,
+			random: randomWithSeed([ seed, config.position ]),
+			regions: result,
+			position: config.position,
+			bounds: bounds,
+			mutations: config.mutations
+		});
+
+		if (isFunction(regions[ region.type ].init)) { // TODO delay init?
+			regions[ region.type ].init({
+				data: region.data,
+				random: randomWithSeed([ seed, config.position ])
+			});
+		}
+
+		result[ x ] = result[ x ] || {};
+		result[ x ][ y ] = region;
+		return result;
+	}, {});
+}
 
 function sanitize({ bounds, regions }) {
 

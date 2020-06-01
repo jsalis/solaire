@@ -6,24 +6,24 @@
 	</head>
 	<body>
 		<script type="module">
-
 			import { World, WorldRenderer, Direction } from '../dist/solaire.module.js';
 
+			const worldState = JSON.parse(sessionStorage.getItem('worldState'));
+
 			const world = World.create({
-
 				seed: 'black sabbath iron maiden judas priest',
-
 				bounds: {
 					x: { min: -6, max: 6, wrap: true },
 					y: { min: -6, max: 6, wrap: true }
 				},
-
+                position: {
+					x: 0,
+                    y: 0
+                },
 				regionSize: 32,
-
 				regions: {
 					sparseCave: {
 						init({ data }) {
-
 							data.randomize([
 								{ value: 0, weight: 101 },
 								{ value: 1, weight: 99 }
@@ -32,7 +32,6 @@
 					},
 					denseCave: {
 						init({ data }) {
-
 							data.randomize([
 								{ value: 0, weight: 115 },
 								{ value: 1, weight: 85 }
@@ -41,7 +40,6 @@
 					},
 					goldDeposit: {
 						init({ data }) {
-
 							data.randomize([
 								{ value: 0, weight: 5 },
 								{ value: 1, weight: 5 },
@@ -50,18 +48,14 @@
 						}
 					}
 				},
-
 				chooseRegion() {
-
 					return [
 						{ value: 'sparseCave', weight: 15 },
 						{ value: 'denseCave', weight: 14 },
 						{ value: 'goldDeposit', weight: 1 }
 					];
 				},
-
 				generate({ regions, effects }) {
-
 					regions.select(['sparseCave', 'denseCave'])
 						.applyTimes(6, () => {
 							return effects.cellularAutomata({
@@ -95,7 +89,8 @@
 								decay: 0.75
 							});
 						});
-				}
+				},
+                ...worldState
 			});
 
 			const renderer = WorldRenderer.create(world, {
@@ -104,7 +99,6 @@
 			});
 
 			document.addEventListener('keypress', async event => {
-
 				switch (event.key) {
 					case 'w':
 						await world.move(Direction.CARDINALS.N);
@@ -127,12 +121,11 @@
 			});
 
 			renderer.el().addEventListener('click', event => {
-
-				let { width, height } = renderer.el();
-				let units = world.regionSize * 3;
-				let x = Math.floor((event.offsetX / width) * units);
-				let y = Math.floor((event.offsetY / height) * units);
-				let region = world.region(world.position.x - 1, world.position.y - 1);
+				const { width, height } = renderer.el();
+				const units = world.regionSize * 3;
+				const x = Math.floor((event.offsetX / width) * units);
+				const y = Math.floor((event.offsetY / height) * units);
+				const region = world.region(world.position.x - 1, world.position.y - 1);
 
 				region.data.mutate(x, y, 1);
 				renderer.render();
@@ -141,6 +134,20 @@
 			world.generate();
 			renderer.render();
 			document.body.appendChild(renderer.el());
+
+			const saveButton = document.getElementById('save_button');
+            saveButton.addEventListener('click', () => {
+            	sessionStorage.setItem('worldState', JSON.stringify(world.serialize()));
+            });
+
+            const clearButton = document.getElementById('clear_button');
+            clearButton.addEventListener('click', () => {
+            	sessionStorage.removeItem('worldState');
+            });
 		</script>
+        <div style="margin-bottom: 8px">
+            <button id="save_button">Save</button>
+            <button id="clear_button">Clear</button>
+        </div>
 	</body>
 </html>

@@ -78,3 +78,19 @@ export function wrap(val, min, max) {
 		? (((val - min) % (max + 1 - min)) + (max + 1 - min)) % (max + 1 - min) + min
 		: (((val - max) % (min + 1 - max)) + (min + 1 - max)) % (min + 1 - max) + max;
 }
+
+/**
+ * Returns an array of entries for objects with two levels of keys.
+ *
+ * @param   {Object} obj
+ * @returns {Array}
+ */
+export function deepEntries(obj) {
+	const entries = [];
+	Object.entries(obj).forEach(([x, dim]) => {
+		Object.entries(dim).forEach(([y, value]) => {
+			entries.push([x, y, value]);
+		});
+	});
+	return entries;
+}
