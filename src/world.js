@@ -126,7 +126,6 @@ export const World = {
 					result[ x ] = result[ x ] || {};
 					result[ x ][ y ] = {
 						type: region.type,
-						position: region.position,
 						mutations: region.mutations
 					};
 					return result;
@@ -147,8 +146,8 @@ export const World = {
 function createDataObject({ initialData, bounds, regions, regionSize, seed }) {
 	return deepEntries(initialData).reduce((result, [x, y, config]) => {
 		const region = Region.create({
+			position: { x, y },
 			type: config.type,
-			position: config.position,
 			mutations: config.mutations
 		});
 
