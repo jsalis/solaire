@@ -15,87 +15,52 @@ describe('World', () => {
 		};
 	});
 
-	it('must initialize regions at the origin', () => {
+	it('must not initialize neighbor regions', () => {
 		let world = World.create(config);
 		Object.values(Direction.NEIGHBORS).forEach(dir => {
-			expect(world.region(dir)).toEqual(expect.any(Object));
-		});
-	});
-
-	it('must set the position of all regions', () => {
-		let world = World.create(config);
-		Object.values(Direction.NEIGHBORS).forEach(dir => {
-			expect(world.region(dir).position).toEqual({ x: dir.x, y: dir.y });
+			expect(world.region(dir)).toEqual(undefined);
 		});
 	});
 
 	describe('config.bounds', () => {
 
-		it('must bound the north movement', done => {
+		it('must bound the north movement', () => {
 			config.bounds = {
 				y: { min: -1 }
 			};
 			let world = World.create(config);
-			world.move(Direction.CARDINALS.N)
-				.catch(done.fail);
-			world.move(Direction.CARDINALS.N)
-				.then(done.fail)
-				.catch(error => {
-					expect(error).toEqual(expect.any(Error));
-					expect(error.message).toBe('World position out of bounds');
-					done();
-				});
+			world.move(Direction.CARDINALS.N);
+			expect(() => world.move(Direction.CARDINALS.N)).toThrow('World position out of bounds');
 			expect(world.position).toEqual({ x: 0, y: -1 });
 		});
 
-		it('must bound the east movement', done => {
+		it('must bound the east movement', () => {
 			config.bounds = {
 				x: { max: 1 }
 			};
 			let world = World.create(config);
-			world.move(Direction.CARDINALS.E)
-				.catch(done.fail);
-			world.move(Direction.CARDINALS.E)
-				.then(done.fail)
-				.catch(error => {
-					expect(error).toEqual(expect.any(Error));
-					expect(error.message).toBe('World position out of bounds');
-					done();
-				});
+			world.move(Direction.CARDINALS.E);
+			expect(() => world.move(Direction.CARDINALS.E)).toThrow('World position out of bounds');
 			expect(world.position).toEqual({ x: 1, y: 0 });
 		});
 
-		it('must bound the south movement', done => {
+		it('must bound the south movement', () => {
 			config.bounds = {
 				y: { max: 1 }
 			};
 			let world = World.create(config);
-			world.move(Direction.CARDINALS.S)
-				.catch(done.fail);
-			world.move(Direction.CARDINALS.S)
-				.then(done.fail)
-				.catch(error => {
-					expect(error).toEqual(expect.any(Error));
-					expect(error.message).toBe('World position out of bounds');
-					done();
-				});
+			world.move(Direction.CARDINALS.S);
+			expect(() => world.move(Direction.CARDINALS.S)).toThrow('World position out of bounds');
 			expect(world.position).toEqual({ x: 0, y: 1 });
 		});
 
-		it('must bound the west movement', done => {
+		it('must bound the west movement', () => {
 			config.bounds = {
 				x: { min: -1 }
 			};
 			let world = World.create(config);
-			world.move(Direction.CARDINALS.W)
-				.catch(done.fail);
-			world.move(Direction.CARDINALS.W)
-				.then(done.fail)
-				.catch(error => {
-					expect(error).toEqual(expect.any(Error));
-					expect(error.message).toBe('World position out of bounds');
-					done();
-				});
+			world.move(Direction.CARDINALS.W);
+			expect(() => world.move(Direction.CARDINALS.W)).toThrow('World position out of bounds');
 			expect(world.position).toEqual({ x: -1, y: 0 });
 		});
 
@@ -105,6 +70,7 @@ describe('World', () => {
 				y: { min: 0, max: 0 }
 			};
 			let world = World.create(config);
+			world.init();
 			expect(world.region({ x: 0, y: 0 })).toEqual(expect.any(Object));
 			Object.values(Direction.CARDINALS).forEach(dir => {
 				expect(world.region(dir)).toBe(undefined);
@@ -121,6 +87,7 @@ describe('World', () => {
 			};
 			let world = World.create(config);
 			world.move(Direction.CARDINALS.S);
+			world.init();
 			let position = world.position;
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				let x = position.x + dir.x;
@@ -213,13 +180,14 @@ describe('World', () => {
 
 		it('must initialize each region using the given function', () => {
 			let init = jest.fn();
-			World.create({
+			let world = World.create({
 				regions: {
 					cave: {
 						init
 					}
 				}
 			});
+			world.init();
 			expect(init).toHaveBeenCalledTimes(9);
 		});
 
@@ -237,6 +205,7 @@ describe('World', () => {
 					}
 				}
 			});
+			world.init();
 			let region = world.region({ x: 0, y: 0 });
 			let uniques = {};
 			region.data.each(el => {
@@ -267,6 +236,7 @@ describe('World', () => {
 					cave: {}
 				}
 			});
+			world.init();
 			let region = world.region({ x: 0, y: 0 });
 			expect(region.data.size()).toEqual(regionSize);
 		});
@@ -286,6 +256,7 @@ describe('World', () => {
 				regions,
 				chooseRegion
 			});
+			world.init();
 			expect(chooseRegion).toHaveBeenCalledTimes(9);
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				let type = chooseRegion({
@@ -315,6 +286,7 @@ describe('World', () => {
 				regions,
 				chooseRegion
 			});
+			world.init();
 			expect(chooseRegion).toHaveBeenCalledTimes(9);
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
 				expect(world.region(dir)).not.toEqual(
@@ -329,7 +301,8 @@ describe('World', () => {
 				dungeon: {}
 			};
 			let chooseRegion = jest.fn(() => 'mountains');
-			let fn = () => World.create({ regions, chooseRegion });
+			let world = World.create({ regions, chooseRegion });
+			let fn = () => world.init();
 			expect(fn).toThrow('Invalid region type "mountains" has not been defined');
 		});
 	});
@@ -338,16 +311,19 @@ describe('World', () => {
 
 		it('must return the region at the given position', () => {
 			let world = World.create(config);
+			world.init();
 			expect(world.region({ x: 0, y: 0 })).toBe(world.data[ 0 ][ 0 ]);
 		});
 
 		it('must support position as two arguments', () => {
 			let world = World.create(config);
+			world.init();
 			expect(world.region(1, -1)).toBe(world.data[ 1 ][ -1 ]);
 		});
 
 		it('must return undefined if the region does not exist', () => {
 			let world = World.create(config);
+			world.init();
 			expect(world.region({ x: 8, y: 8 })).toBe(undefined);
 		});
 
@@ -356,6 +332,7 @@ describe('World', () => {
 				x: { min: -1, max: 1, wrap: true }
 			};
 			let world = World.create(config);
+			world.init();
 			expect(world.region({ x: -2, y: 0 })).toBe(world.data[ 1 ][ 0 ]);
 		});
 
@@ -364,6 +341,7 @@ describe('World', () => {
 				y: { min: -1, max: 1, wrap: true }
 			};
 			let world = World.create(config);
+			world.init();
 			expect(world.region({ x: 0, y: -2 })).toBe(world.data[ 0 ][ 1 ]);
 		});
 	});
@@ -378,11 +356,31 @@ describe('World', () => {
 		});
 	});
 
+	describe('init', () => {
+
+		it('must initialize neighbor regions at the current position', () => {
+			let world = World.create(config);
+			world.init();
+			Object.values(Direction.NEIGHBORS).forEach(dir => {
+				expect(world.region(dir)).toEqual(expect.any(Object));
+			});
+		});
+
+		it('must set the position of all neighbor regions', () => {
+			let world = World.create(config);
+			world.init();
+			Object.values(Direction.NEIGHBORS).forEach(dir => {
+				expect(world.region(dir).position).toEqual({ x: dir.x, y: dir.y });
+			});
+		});
+	});
+
 	describe('generate', () => {
 
 		it('must pass a list of regions that are the neighbors to the current position', () => {
 			config.generate = jest.fn();
 			let world = World.create(config);
+			world.init();
 			world.generate();
 			expect(config.generate).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -391,34 +389,30 @@ describe('World', () => {
 			);
 			let { regions } = config.generate.mock.calls[config.generate.mock.calls.length - 1][0];
 			expect(regions.get()).toEqual([
-				world.region({ x: 0, y: 0 }),
-				world.region({ x: 0, y: -1 }),
-				world.region({ x: 1, y: 0 }),
-				world.region({ x: 0, y: 1 }),
+				world.region({ x: -1, y: -1 }),
 				world.region({ x: -1, y: 0 }),
-				world.region({ x: 1, y: -1 }),
-				world.region({ x: 1, y: 1 }),
 				world.region({ x: -1, y: 1 }),
-				world.region({ x: -1, y: -1 })
+				world.region({ x: 0, y: -1 }),
+				world.region({ x: 0, y: 0 }),
+				world.region({ x: 0, y: 1 }),
+				world.region({ x: 1, y: -1 }),
+				world.region({ x: 1, y: 0 }),
+				world.region({ x: 1, y: 1 })
 			]);
 		});
 	});
 
 	describe('move', () => {
 
-		it('must handle a direction of zero length', done => {
+		it('must handle a direction of zero length', () => {
 			let world = World.create(config);
-			world.move(Direction.ORIGIN.C)
-				.then(done)
-				.catch(done.fail);
+			world.move(Direction.ORIGIN.C);
 			expect(world.position).toEqual({ x: 0, y: 0 });
 		});
 
-		it('must support direction as two arguments', done => {
+		it('must support direction as two arguments', () => {
 			let world = World.create(config);
-			world.move(1, -1)
-				.then(done)
-				.catch(done.fail);
+			world.move(1, -1);
 			expect(world.position).toEqual({ x: 1, y: -1 });
 		});
 	});

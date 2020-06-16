@@ -3,7 +3,7 @@ import merge from 'merge';
 
 import * as vec2 from './utils/vec2';
 import * as effects from './effects';
-import { attempt, clamp, wrap, isFunction, deepEntries } from './utils/common';
+import { clamp, wrap, isFunction, deepEntries } from './utils/common';
 import { randomWithSeed, randomFrom } from './utils/random';
 import { Direction } from './direction';
 import { DataSegment } from './data-segment';
@@ -40,13 +40,11 @@ export const World = {
 	 */
 	create(config) {
 		config = merge.recursive(true, DEFAULT_CONFIG, config);
+		sanitize(config);
 
 		let { seed } = randomWithSeed(config.seed);
 		let position = vec2.clone(config.position);
 		let data = createDataObject(config);
-
-		sanitize(config);
-		initialize(data, position, config);
 
 		return {
 			get data() {
@@ -84,40 +82,60 @@ export const World = {
 				return data[ pos.x ] && data[ pos.x ][ pos.y ];
 			},
 
-			generate() {
+			init(arg) {
+				let area = merge.recursive(true, {
+					x: { min: -1, max: 1 },
+					y: { min: -1, max: 1 }
+				}, arg);
+
+				for (let x = area.x.min; x <= area.x.max; x++) {
+					for (let y = area.y.min; y <= area.y.max; y++) {
+						let pos = vec2.add(position, { x, y });
+						initialize(data, pos, config);
+					}
+				}
+			},
+
+			generate(arg) {
+				let area = merge.recursive(true, {
+					x: { min: -1, max: 1 },
+					y: { min: -1, max: 1 }
+				}, arg);
+
 				let regionTypes = Object.keys(config.regions);
-				let regions = Object.values(Direction.NEIGHBORS)
-					.map(dir => {
-						let pos = vec2.add(position, dir);
-						return this.region(pos);
-					})
-					.filter(x => x);
+				let regions = [];
+
+				for (let x = area.x.min; x <= area.x.max; x++) {
+					for (let y = area.y.min; y <= area.y.max; y++) {
+						let pos = vec2.add(position, { x, y });
+						let reg = this.region(pos);
+
+						if (reg) {
+							regions.push(reg);
+						}
+					}
+				}
 
 				let regionGenerator = RegionGenerator.create({ regionTypes, regions, seed });
-
 				config.generate({ regions: regionGenerator, effects });
 				mutate(data, position, config);
 			},
 
 			move(...args) {
-				return attempt(() => {
-					let dir = args.length === 2 ? { x: args[0], y: args[1] } : args[0];
+				let dir = args.length === 2 ? { x: args[0], y: args[1] } : args[0];
 
-					if (dir.x === 0 && dir.y === 0) {
-						return;
-					}
+				if (dir.x === 0 && dir.y === 0) {
+					return;
+				}
 
-					let { bounds } = config;
-					let current = vec2.clone(position);
-					position.x = (bounds.x.wrap ? wrap : clamp)(position.x + dir.x, bounds.x.min, bounds.x.max);
-					position.y = (bounds.y.wrap ? wrap : clamp)(position.y + dir.y, bounds.y.min, bounds.y.max);
+				let { bounds } = config;
+				let current = vec2.clone(position);
+				position.x = (bounds.x.wrap ? wrap : clamp)(position.x + dir.x, bounds.x.min, bounds.x.max);
+				position.y = (bounds.y.wrap ? wrap : clamp)(position.y + dir.y, bounds.y.min, bounds.y.max);
 
-					if (vec2.equals(position, current)) {
-						throw Error('World position out of bounds');
-					}
-
-					initialize(data, position, config);
-				});
+				if (vec2.equals(position, current)) {
+					throw Error('World position out of bounds');
+				}
 			},
 
 			serialize() {
@@ -153,7 +171,7 @@ function createDataObject({ initialData, bounds, regions, regionSize, seed }) {
 
 		region.data = DataSegment.create({
 			size: regionSize,
-			random: randomWithSeed([ seed, config.position ]),
+			random: randomWithSeed([ seed, config.position ]), // TODO use config.region seed if exists
 			regions: result,
 			position: config.position,
 			bounds: bounds,
@@ -196,68 +214,66 @@ function sanitize({ bounds, regions }) {
 }
 
 function initialize(data, position, { bounds, regions, chooseRegion, regionSize, seed }) {
-	Object.values(Direction.NEIGHBORS).forEach(dir => {
-		let regionTypes = Object.keys(regions);
-		let min = { x: bounds.x.min, y: bounds.y.min };
-		let max = { x: bounds.x.max, y: bounds.y.max };
-		let pos = vec2.add(position, dir);
+	let regionTypes = Object.keys(regions);
+	let min = { x: bounds.x.min, y: bounds.y.min };
+	let max = { x: bounds.x.max, y: bounds.y.max };
+	let pos = vec2.clone(position);
 
-		if (bounds.x.wrap) {
-			pos.x = wrap(pos.x, bounds.x.min, bounds.x.max);
-		}
+	if (bounds.x.wrap) {
+		pos.x = wrap(pos.x, bounds.x.min, bounds.x.max);
+	}
 
-		if (bounds.y.wrap) {
-			pos.y = wrap(pos.y, bounds.y.min, bounds.y.max);
-		}
+	if (bounds.y.wrap) {
+		pos.y = wrap(pos.y, bounds.y.min, bounds.y.max);
+	}
 
-		if (vec2.intersects(pos, min, max)) {
-			data[ pos.x ] = data[ pos.x ] || {};
+	if (vec2.intersects(pos, min, max)) {
+		data[ pos.x ] = data[ pos.x ] || {};
 
-			if (!data[ pos.x ][ pos.y ]) {
-				let random = randomWithSeed([ seed, pos ]);
-				let type = chooseRegion({
-					position: pos,
-					regionTypes: regionTypes,
-					random: random
-				});
-
-				if (Array.isArray(type)) {
-					type = randomFrom(type, random)();
-				}
-
-				if (!regionTypes.includes(type)) {
-					throw Error(`Invalid region type "${ type }" has not been defined`);
-				}
-
-				data[ pos.x ][ pos.y ] = Region.create({
-					type: type,
-					position: pos
-				});
-			}
-
-			let region = data[ pos.x ][ pos.y ];
-
-			region.data = DataSegment.create({
-				size: regionSize,
-				random: randomWithSeed([ seed, pos ]),
-				regions: data,
+		if (!data[ pos.x ][ pos.y ]) {
+			let random = randomWithSeed([ seed, pos ]);
+			let type = chooseRegion({
 				position: pos,
-				bounds: bounds,
-				mutations: region.mutations
+				regionTypes: regionTypes,
+				random: random
 			});
 
-			if (isFunction(regions[ region.type ].init)) {
-				regions[ region.type ].init({
-					data: region.data,
-					random: randomWithSeed([ seed, pos ])
-				});
+			if (Array.isArray(type)) {
+				type = randomFrom(type, random)();
 			}
+
+			if (!regionTypes.includes(type)) {
+				throw Error(`Invalid region type "${ type }" has not been defined`);
+			}
+
+			data[ pos.x ][ pos.y ] = Region.create({
+				type: type,
+				position: pos
+			});
 		}
-	});
+
+		let region = data[ pos.x ][ pos.y ];
+
+		region.data = DataSegment.create({
+			size: regionSize,
+			random: randomWithSeed([ seed, pos ]),
+			regions: data,
+			position: pos,
+			bounds: bounds,
+			mutations: region.mutations
+		});
+
+		if (isFunction(regions[ region.type ].init)) {
+			regions[ region.type ].init({
+				data: region.data,
+				random: randomWithSeed([ seed, pos ])
+			});
+		}
+	}
 }
 
 function mutate(data, position, { bounds }) {
-	Object.values(Direction.NEIGHBORS).forEach(dir => {
+	Object.values(Direction.NEIGHBORS).forEach(dir => { // TODO use generate area
 		let pos = vec2.add(position, dir);
 
 		if (bounds.x.wrap) {

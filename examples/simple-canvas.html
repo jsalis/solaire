@@ -9,7 +9,6 @@
 			import { World, WorldRenderer, Direction } from '../dist/solaire.module.js';
 
 			const worldState = JSON.parse(sessionStorage.getItem('worldState'));
-
 			const world = World.create({
 				seed: 'black sabbath iron maiden judas priest',
 				bounds: {
@@ -98,23 +97,24 @@
 				colors: ['gray', 'silver', 'skyblue', 'gold']
 			});
 
-			document.addEventListener('keypress', async event => {
+			document.addEventListener('keypress', event => {
 				switch (event.key) {
 					case 'w':
-						await world.move(Direction.CARDINALS.N);
+						world.move(Direction.CARDINALS.N);
 						break;
 					case 'a':
-						await world.move(Direction.CARDINALS.W);
+						world.move(Direction.CARDINALS.W);
 						break;
 					case 's':
-						await world.move(Direction.CARDINALS.S);
+						world.move(Direction.CARDINALS.S);
 						break;
 					case 'd':
-						await world.move(Direction.CARDINALS.E);
+						world.move(Direction.CARDINALS.E);
 						break;
 				}
 
 				if ('wasd'.includes(event.key)) {
+					world.init();
 					world.generate();
 					renderer.render();
 				}
@@ -131,6 +131,7 @@
 				renderer.render();
 			});
 
+			world.init();
 			world.generate();
 			renderer.render();
 			document.body.appendChild(renderer.el());
