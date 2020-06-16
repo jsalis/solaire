@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/jsalis/solaire/compare/v0.2.0...v0.3.0) (2020-06-16)
+
+
+### Features
+
+* add separate init method to run generation on custom region areas ([e34c36f](https://github.com/jsalis/solaire/commit/e34c36f))
+* add world serialize function and option to set initial data ([28f0927](https://github.com/jsalis/solaire/commit/28f0927))
+
+
+
 ## [0.2.0](https://github.com/jsalis/solaire/compare/v0.1.0...v0.2.0) (2020-04-27)
 
 
