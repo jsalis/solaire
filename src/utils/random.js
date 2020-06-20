@@ -6,7 +6,7 @@ import { isDefined } from './common';
 /**
  * Creates a pseudo-random number generator with a given seed.
  *
- * @param   {*} seed
+ * @param   {*} [seed]
  * @returns {Function}
  */
 export function randomWithSeed(seed) {
@@ -16,6 +16,24 @@ export function randomWithSeed(seed) {
 			return random;
 		}
 	});
+}
+
+/**
+ * Generates a new seed with a given length.
+ *
+ * @param   {Number} [length]
+ * @returns {String}
+ */
+export function generateSeed(length = 32) {
+	let random = seedRandom(null);
+	let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	let result = '';
+
+	for (let i = 0; i < length; i++) {
+		result += chars[Math.floor(random() * chars.length)];
+	}
+
+	return result;
 }
 
 /**
