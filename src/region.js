@@ -10,6 +10,7 @@ export const Region = {
 	create(config) {
 		return {
 			type: config.type,
+			seed: config.seed || '',
 			position: config.position,
 			mutations: config.mutations || {},
 			data: []

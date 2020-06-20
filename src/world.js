@@ -158,6 +158,7 @@ export const World = {
 					result[ x ] = result[ x ] || {};
 					result[ x ][ y ] = {
 						type: region.type,
+						seed: region.seed,
 						mutations: region.mutations
 					};
 					return result;
@@ -175,29 +176,14 @@ export const World = {
 	}
 };
 
-function createDataObject({ initialData, bounds, regions, regionSize, seed }) {
+function createDataObject({ initialData }) {
 	return deepEntries(initialData).reduce((result, [x, y, config]) => {
 		const region = Region.create({
 			position: { x, y },
 			type: config.type,
+			seed: config.seed,
 			mutations: config.mutations
 		});
-
-		region.data = DataSegment.create({
-			size: regionSize,
-			random: randomWithSeed([ seed, config.position ]), // TODO use config.region seed if exists
-			regions: result,
-			position: config.position,
-			bounds: bounds,
-			mutations: config.mutations
-		});
-
-		if (isFunction(regions[ region.type ].init)) { // TODO delay init?
-			regions[ region.type ].init({
-				data: region.data,
-				random: randomWithSeed([ seed, config.position ])
-			});
-		}
 
 		result[ x ] = result[ x ] || {};
 		result[ x ][ y ] = region;
@@ -270,7 +256,7 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 
 		region.data = DataSegment.create({
 			size: regionSize,
-			random: randomWithSeed([ seed, pos ]),
+			random: randomWithSeed([ region.seed, seed, pos ]),
 			regions: data,
 			position: pos,
 			bounds: bounds,
@@ -280,7 +266,7 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 		if (isFunction(regions[ region.type ].init)) {
 			regions[ region.type ].init({
 				data: region.data,
-				random: randomWithSeed([ seed, pos ])
+				random: randomWithSeed([ region.seed, seed, pos ])
 			});
 		}
 	}
