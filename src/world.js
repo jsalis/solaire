@@ -88,10 +88,24 @@ export const World = {
 					y: { min: -1, max: 1 }
 				}, arg);
 
-				for (let x = area.x.min; x <= area.x.max; x++) {
+				for (let x = area.x.min; x <= area.x.max; x++) { // TODO to number
 					for (let y = area.y.min; y <= area.y.max; y++) {
 						let pos = vec2.add(position, { x, y });
 						initialize(data, pos, config);
+					}
+				}
+			},
+
+			remove(arg) {
+				let area = merge.recursive(true, {
+					x: { min: -1, max: 1 },
+					y: { min: -1, max: 1 }
+				}, arg);
+
+				for (let x = area.x.min; x <= area.x.max; x++) { // TODO to number
+					for (let y = area.y.min; y <= area.y.max; y++) {
+						let pos = vec2.add(position, { x, y });
+						data[pos.x][pos.y] = undefined;
 					}
 				}
 			},
@@ -105,7 +119,7 @@ export const World = {
 				let regionTypes = Object.keys(config.regions);
 				let regions = [];
 
-				for (let x = area.x.min; x <= area.x.max; x++) {
+				for (let x = area.x.min; x <= area.x.max; x++) { // TODO to number
 					for (let y = area.y.min; y <= area.y.max; y++) {
 						let pos = vec2.add(position, { x, y });
 						let reg = this.region(pos);
