@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/jsalis/solaire/compare/v0.3.0...v0.4.0) (2020-06-20)
+
+
+### Features
+
+* add function to generate seeds ([a5c1706](https://github.com/jsalis/solaire/commit/a5c1706))
+* add remove method to world ([e778026](https://github.com/jsalis/solaire/commit/e778026))
+* add seed to regions ([5959324](https://github.com/jsalis/solaire/commit/5959324))
+
+
+
 ## [0.3.0](https://github.com/jsalis/solaire/compare/v0.2.0...v0.3.0) (2020-06-16)
 
 
