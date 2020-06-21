@@ -10,7 +10,7 @@ export const Region = {
 	create(config) {
 		return {
 			type: config.type,
-			seed: config.seed || '',
+			seed: config.seed || JSON.stringify(config.position),
 			position: config.position,
 			mutations: config.mutations || {},
 			data: []
