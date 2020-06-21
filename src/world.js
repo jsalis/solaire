@@ -3,7 +3,7 @@ import merge from 'merge';
 
 import * as vec2 from './utils/vec2';
 import * as effects from './effects';
-import { clamp, wrap, isFunction, deepEntries } from './utils/common';
+import { clamp, wrap, isFunction, isObject, deepEntries } from './utils/common';
 import { randomWithSeed, randomFrom } from './utils/random';
 import { Direction } from './direction';
 import { DataSegment } from './data-segment';
@@ -67,65 +67,47 @@ export const World = {
 				return config.regionSize;
 			},
 
-			region(...args) {
-				let pos = args.length === 2 ? { x: args[0], y: args[1] } : args[0];
-				let { bounds } = config;
-
-				if (bounds.x.wrap) {
-					pos.x = wrap(pos.x, bounds.x.min, bounds.x.max);
-				}
-
-				if (bounds.y.wrap) {
-					pos.y = wrap(pos.y, bounds.y.min, bounds.y.max);
-				}
-
-				return data[ pos.x ] && data[ pos.x ][ pos.y ];
+			getRegion(...args) {
+				let pos = applyBounds(
+					args.length === 2 ? { x: args[0], y: args[1] } : args[0],
+					config.bounds
+				);
+				return pos && data[ pos.x ]?.[ pos.y ];
 			},
 
 			init(arg) {
-				let area = merge.recursive(true, {
-					x: { min: -1, max: 1 },
-					y: { min: -1, max: 1 }
-				}, arg);
+				let opt = parseOptions(arg, position);
 
-				for (let x = area.x.min; x <= area.x.max; x++) { // TODO to number
-					for (let y = area.y.min; y <= area.y.max; y++) {
-						let pos = vec2.add(position, { x, y });
-						initialize(data, pos, config);
+				for (let x = opt.x.min; x <= opt.x.max; x++) {
+					for (let y = opt.y.min; y <= opt.y.max; y++) {
+						setRegion(data, { x, y }, opt, config);
 					}
 				}
 			},
 
 			remove(arg) {
-				let area = merge.recursive(true, {
-					x: { min: -1, max: 1 },
-					y: { min: -1, max: 1 }
-				}, arg);
+				let opt = parseOptions(arg, position);
 
-				for (let x = area.x.min; x <= area.x.max; x++) { // TODO to number
-					for (let y = area.y.min; y <= area.y.max; y++) {
-						let pos = vec2.add(position, { x, y });
-						data[pos.x][pos.y] = undefined;
+				for (let x = opt.x.min; x <= opt.x.max; x++) {
+					for (let y = opt.y.min; y <= opt.y.max; y++) {
+						data[x][y] = undefined;
 					}
 				}
 			},
 
 			generate(arg) {
-				let area = merge.recursive(true, {
-					x: { min: -1, max: 1 },
-					y: { min: -1, max: 1 }
-				}, arg);
-
+				let opt = parseOptions(arg, position);
 				let regionTypes = Object.keys(config.regions);
 				let regions = [];
 
-				for (let x = area.x.min; x <= area.x.max; x++) { // TODO to number
-					for (let y = area.y.min; y <= area.y.max; y++) {
-						let pos = vec2.add(position, { x, y });
-						let reg = this.region(pos);
+				for (let x = opt.x.min; x <= opt.x.max; x++) {
+					for (let y = opt.y.min; y <= opt.y.max; y++) {
+						let pos = { x, y };
+						let reg = this.getRegion(pos);
 
 						if (reg) {
 							regions.push(reg);
+							initialize(data, pos, config);
 						}
 					}
 				}
@@ -176,21 +158,6 @@ export const World = {
 	}
 };
 
-function createDataObject({ initialData }) {
-	return deepEntries(initialData).reduce((result, [x, y, config]) => {
-		const region = Region.create({
-			position: { x, y },
-			type: config.type,
-			seed: config.seed,
-			mutations: config.mutations
-		});
-
-		result[ x ] = result[ x ] || {};
-		result[ x ][ y ] = region;
-		return result;
-	}, {});
-}
-
 function sanitize({ bounds, regions }) {
 	if (bounds.x.min > 0 || bounds.y.min > 0) {
 		throw Error('Minimum bounds must not be greater than zero');
@@ -213,8 +180,22 @@ function sanitize({ bounds, regions }) {
 	}
 }
 
-function initialize(data, position, { bounds, regions, chooseRegion, regionSize, seed }) {
-	let regionTypes = Object.keys(regions);
+function createDataObject({ initialData }) {
+	return deepEntries(initialData).reduce((result, [x, y, state]) => {
+		const region = Region.create({
+			position: { x, y },
+			type: state.type,
+			seed: state.seed,
+			mutations: state.mutations
+		});
+
+		result[ x ] = result[ x ] || {};
+		result[ x ][ y ] = region;
+		return result;
+	}, {});
+}
+
+function applyBounds(position, bounds) {
 	let min = { x: bounds.x.min, y: bounds.y.min };
 	let max = { x: bounds.x.max, y: bounds.y.max };
 	let pos = vec2.clone(position);
@@ -228,11 +209,48 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 	}
 
 	if (vec2.intersects(pos, min, max)) {
+		return pos;
+	}
+
+	return undefined;
+}
+
+function parseOptions(opt = {}, position) {
+	let def = {
+		x: { min: position.x - 1, max: position.x + 1 },
+		y: { min: position.y - 1, max: position.y + 1 }
+	};
+	return {
+		...opt,
+		x: {
+			min: isObject(opt.x)
+				? Number(opt.x?.min ?? def.x.min)
+				: Number(opt.x ?? def.x.min),
+			max: isObject(opt.x)
+				? Number(opt.x?.max ?? def.x.max)
+				: Number(opt.x ?? def.x.max),
+		},
+		y: {
+			min: isObject(opt.y)
+				? Number(opt.y?.min ?? def.y.min)
+				: Number(opt.y ?? def.y.min),
+			max: isObject(opt.y)
+				? Number(opt.y?.max ?? def.y.max)
+				: Number(opt.y ?? def.y.max),
+		}
+	};
+}
+
+function setRegion(data, position, options, { bounds, regions, chooseRegion, seed }) {
+	let pos = applyBounds(position, bounds);
+
+	if (pos) {
 		data[ pos.x ] = data[ pos.x ] || {};
 
 		if (!data[ pos.x ][ pos.y ]) {
+			let regionTypes = Object.keys(regions);
 			let random = randomWithSeed([ seed, pos ]);
-			let type = chooseRegion({
+			let type = options.type || chooseRegion({
 				position: pos,
 				regionTypes: regionTypes,
 				random: random
@@ -248,15 +266,22 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 
 			data[ pos.x ][ pos.y ] = Region.create({
 				type: type,
+				seed: options.seed,
 				position: pos
 			});
 		}
+	}
+}
 
+function initialize(data, position, { bounds, regions, regionSize, seed }) {
+	let pos = applyBounds(position, bounds);
+
+	if (pos) {
 		let region = data[ pos.x ][ pos.y ];
 
 		region.data = DataSegment.create({
 			size: regionSize,
-			random: randomWithSeed([ region.seed, seed, pos ]),
+			random: randomWithSeed([ seed, region.seed ]),
 			regions: data,
 			position: pos,
 			bounds: bounds,
@@ -266,7 +291,7 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 		if (isFunction(regions[ region.type ].init)) {
 			regions[ region.type ].init({
 				data: region.data,
-				random: randomWithSeed([ region.seed, seed, pos ])
+				random: randomWithSeed([ seed, region.seed ])
 			});
 		}
 	}
@@ -274,19 +299,10 @@ function initialize(data, position, { bounds, regions, chooseRegion, regionSize,
 
 function mutate(data, position, { bounds }) {
 	Object.values(Direction.NEIGHBORS).forEach(dir => { // TODO use generate area
-		let pos = vec2.add(position, dir);
+		let pos = applyBounds(vec2.add(position, dir), bounds);
+		let region = pos && data[ pos.x ]?.[ pos.y ];
 
-		if (bounds.x.wrap) {
-			pos.x = wrap(pos.x, bounds.x.min, bounds.x.max);
-		}
-
-		if (bounds.y.wrap) {
-			pos.y = wrap(pos.y, bounds.y.min, bounds.y.max);
-		}
-
-		let region = data[ pos.x ] && data[ pos.x ][ pos.y ];
-
-		if (region) {
+		if (pos && region) {
 			Object.entries(region.mutations).forEach(([ key, val ]) => {
 				let [ x, y ] = key.split('.');
 				region.data.set(x, y, val);

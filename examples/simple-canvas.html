@@ -125,7 +125,7 @@
 				const units = world.regionSize * 3;
 				const x = Math.floor((event.offsetX / width) * units);
 				const y = Math.floor((event.offsetY / height) * units);
-				const region = world.region(world.position.x - 1, world.position.y - 1);
+				const region = world.getRegion(world.position.x - 1, world.position.y - 1);
 
 				region.data.mutate(x, y, 1);
 				renderer.render();

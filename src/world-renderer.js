@@ -29,7 +29,7 @@ export const WorldRenderer = {
 				Object.values(Direction.NEIGHBORS).forEach(dir => {
 					let x = world.position.x + dir.x;
 					let y = world.position.y + dir.y;
-					let region = world.region({ x, y });
+					let region = world.getRegion({ x, y });
 
 					if (!region) {
 						return;

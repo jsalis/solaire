@@ -18,7 +18,7 @@ describe('World', () => {
 	it('must not initialize neighbor regions', () => {
 		let world = World.create(config);
 		Object.values(Direction.NEIGHBORS).forEach(dir => {
-			expect(world.region(dir)).toEqual(undefined);
+			expect(world.getRegion(dir)).toEqual(undefined);
 		});
 	});
 
@@ -71,12 +71,12 @@ describe('World', () => {
 			};
 			let world = World.create(config);
 			world.init();
-			expect(world.region({ x: 0, y: 0 })).toEqual(expect.any(Object));
+			expect(world.getRegion({ x: 0, y: 0 })).toEqual(expect.any(Object));
 			Object.values(Direction.CARDINALS).forEach(dir => {
-				expect(world.region(dir)).toBe(undefined);
+				expect(world.getRegion(dir)).toBe(undefined);
 			});
 			Object.values(Direction.ORDINALS).forEach(dir => {
-				expect(world.region(dir)).toBe(undefined);
+				expect(world.getRegion(dir)).toBe(undefined);
 			});
 		});
 
@@ -93,7 +93,7 @@ describe('World', () => {
 				let x = position.x + dir.x;
 				let y = position.y + dir.y;
 				let value = y > 1 ? undefined : expect.any(Object);
-				expect(world.region({ x, y })).toEqual(value);
+				expect(world.getRegion({ x, y })).toEqual(value);
 			});
 		});
 
@@ -188,6 +188,7 @@ describe('World', () => {
 				}
 			});
 			world.init();
+			world.generate();
 			expect(init).toHaveBeenCalledTimes(9);
 		});
 
@@ -206,7 +207,8 @@ describe('World', () => {
 				}
 			});
 			world.init();
-			let region = world.region({ x: 0, y: 0 });
+			world.generate();
+			let region = world.getRegion({ x: 0, y: 0 });
 			let uniques = {};
 			region.data.each(el => {
 				uniques[ el ] = true;
@@ -237,7 +239,8 @@ describe('World', () => {
 				}
 			});
 			world.init();
-			let region = world.region({ x: 0, y: 0 });
+			world.generate();
+			let region = world.getRegion({ x: 0, y: 0 });
 			expect(region.data.size()).toEqual(regionSize);
 		});
 	});
@@ -263,7 +266,7 @@ describe('World', () => {
 					position: dir,
 					regionTypes: Object.keys(regions)
 				});
-				expect(world.region(dir)).toEqual(
+				expect(world.getRegion(dir)).toEqual(
 					expect.objectContaining({ type })
 				);
 			});
@@ -289,7 +292,7 @@ describe('World', () => {
 			world.init();
 			expect(chooseRegion).toHaveBeenCalledTimes(9);
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
-				expect(world.region(dir)).not.toEqual(
+				expect(world.getRegion(dir)).not.toEqual(
 					expect.objectContaining({ type: 'third' })
 				);
 			});
@@ -312,19 +315,19 @@ describe('World', () => {
 		it('must return the region at the given position', () => {
 			let world = World.create(config);
 			world.init();
-			expect(world.region({ x: 0, y: 0 })).toBe(world.data[ 0 ][ 0 ]);
+			expect(world.getRegion({ x: 0, y: 0 })).toBe(world.data[ 0 ][ 0 ]);
 		});
 
 		it('must support position as two arguments', () => {
 			let world = World.create(config);
 			world.init();
-			expect(world.region(1, -1)).toBe(world.data[ 1 ][ -1 ]);
+			expect(world.getRegion(1, -1)).toBe(world.data[ 1 ][ -1 ]);
 		});
 
 		it('must return undefined if the region does not exist', () => {
 			let world = World.create(config);
 			world.init();
-			expect(world.region({ x: 8, y: 8 })).toBe(undefined);
+			expect(world.getRegion({ x: 8, y: 8 })).toBe(undefined);
 		});
 
 		it('must wrap an out-of-bounds "x" position when enabled', () => {
@@ -333,7 +336,7 @@ describe('World', () => {
 			};
 			let world = World.create(config);
 			world.init();
-			expect(world.region({ x: -2, y: 0 })).toBe(world.data[ 1 ][ 0 ]);
+			expect(world.getRegion({ x: -2, y: 0 })).toBe(world.data[ 1 ][ 0 ]);
 		});
 
 		it('must wrap an out-of-bounds "y" position when enabled', () => {
@@ -342,7 +345,7 @@ describe('World', () => {
 			};
 			let world = World.create(config);
 			world.init();
-			expect(world.region({ x: 0, y: -2 })).toBe(world.data[ 0 ][ 1 ]);
+			expect(world.getRegion({ x: 0, y: -2 })).toBe(world.data[ 0 ][ 1 ]);
 		});
 	});
 
@@ -362,7 +365,7 @@ describe('World', () => {
 			let world = World.create(config);
 			world.init();
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
-				expect(world.region(dir)).toEqual(expect.any(Object));
+				expect(world.getRegion(dir)).toEqual(expect.any(Object));
 			});
 		});
 
@@ -370,7 +373,7 @@ describe('World', () => {
 			let world = World.create(config);
 			world.init();
 			Object.values(Direction.NEIGHBORS).forEach(dir => {
-				expect(world.region(dir).position).toEqual({ x: dir.x, y: dir.y });
+				expect(world.getRegion(dir).position).toEqual({ x: dir.x, y: dir.y });
 			});
 		});
 	});
@@ -389,15 +392,15 @@ describe('World', () => {
 			);
 			let { regions } = config.generate.mock.calls[config.generate.mock.calls.length - 1][0];
 			expect(regions.get()).toEqual([
-				world.region({ x: -1, y: -1 }),
-				world.region({ x: -1, y: 0 }),
-				world.region({ x: -1, y: 1 }),
-				world.region({ x: 0, y: -1 }),
-				world.region({ x: 0, y: 0 }),
-				world.region({ x: 0, y: 1 }),
-				world.region({ x: 1, y: -1 }),
-				world.region({ x: 1, y: 0 }),
-				world.region({ x: 1, y: 1 })
+				world.getRegion({ x: -1, y: -1 }),
+				world.getRegion({ x: -1, y: 0 }),
+				world.getRegion({ x: -1, y: 1 }),
+				world.getRegion({ x: 0, y: -1 }),
+				world.getRegion({ x: 0, y: 0 }),
+				world.getRegion({ x: 0, y: 1 }),
+				world.getRegion({ x: 1, y: -1 }),
+				world.getRegion({ x: 1, y: 0 }),
+				world.getRegion({ x: 1, y: 1 })
 			]);
 		});
 	});

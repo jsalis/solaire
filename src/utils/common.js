@@ -1,17 +1,5 @@
 
 /**
- * Creates a promise to wrap a function. Any synchronous exceptions turn into rejections.
- *
- * @param   {Function} fn
- * @returns {Promise}
- */
-export function attempt(fn) {
-	return new Promise(resolve => {
-		resolve(fn());
-	});
-}
-
-/**
  * Determines whether a value is a function.
  *
  * @param   {*} val
@@ -39,6 +27,16 @@ export function isSymbol(val) {
  */
 export function isDefined(val) {
 	return val !== undefined;
+}
+
+/**
+ * Returns whether a value is an object.
+ *
+ * @param  {*} val
+ * @return {Boolean}
+ */
+export function isObject(val) {
+	return typeof val === 'object' && val !== null;
 }
 
 /**
