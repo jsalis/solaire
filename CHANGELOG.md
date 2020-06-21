@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/jsalis/solaire/compare/v0.4.0...v0.5.0) (2020-06-21)
+
+
+### Build System
+
+* update dependencies ([4d89912](https://github.com/jsalis/solaire/commit/4d89912))
+
+
+### Features
+
+* always init regions before generating and add more flexible area options ([f1e0a7d](https://github.com/jsalis/solaire/commit/f1e0a7d))
+* use region position as default seed ([4184ba8](https://github.com/jsalis/solaire/commit/4184ba8))
+
+
+
 ## [0.4.0](https://github.com/jsalis/solaire/compare/v0.3.0...v0.4.0) (2020-06-20)
 
 
