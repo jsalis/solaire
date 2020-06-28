@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/jsalis/solaire/compare/v0.5.0...v0.6.0) (2020-06-28)
+
+
+### Features
+
+* add wip effect for dungeon rooms ([b42ee7e](https://github.com/jsalis/solaire/commit/b42ee7e))
+
+
+
 ## [0.5.0](https://github.com/jsalis/solaire/compare/v0.4.0...v0.5.0) (2020-06-21)
 
 
