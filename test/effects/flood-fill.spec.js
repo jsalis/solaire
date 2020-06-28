@@ -1,5 +1,5 @@
 
-import { floodFill } from '../../src/effects/flood-fill';
+import { floodFill } from '../../src/effects';
 import { randomWithSeed } from '../../src/utils/random';
 import { DataSegment } from '../../src/data-segment';
 

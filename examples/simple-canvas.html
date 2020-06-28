@@ -45,13 +45,19 @@
 								{ value: 3, weight: 6 }
 							]);
 						}
+					},
+					dungeon: {
+						init({ data }) {
+							data.fill(0);
+						}
 					}
 				},
 				chooseRegion() {
 					return [
 						{ value: 'sparseCave', weight: 15 },
 						{ value: 'denseCave', weight: 14 },
-						{ value: 'goldDeposit', weight: 1 }
+						{ value: 'goldDeposit', weight: 1 },
+						{ value: 'dungeon', weight: 1 }
 					];
 				},
 				generate({ regions, effects }) {
@@ -88,13 +94,26 @@
 								decay: 0.75
 							});
 						});
+
+					regions.select('dungeon')
+						.apply(() => {
+							return effects.dungeonRooms({
+								wall: 0,
+								floor: 1,
+								minRoomSize: 5,
+								maxRoomSize: 11,
+								roomAttempts: 10,
+								connectivity: 0.4,
+								runFactor: 0.5
+							});
+						});
 				},
                 ...worldState
 			});
 
 			const renderer = WorldRenderer.create(world, {
 				size: 256,
-				colors: ['gray', 'silver', 'skyblue', 'gold']
+				colors: ['gray', 'silver', 'skyblue', 'gold', 'red', 'purple', 'orange']
 			});
 
 			document.addEventListener('keypress', event => {

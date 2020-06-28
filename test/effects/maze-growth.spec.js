@@ -1,5 +1,5 @@
 
-import { mazeGrowth } from '../../src/effects/maze-growth';
+import { mazeGrowth } from '../../src/effects';
 import { randomWithSeed } from '../../src/utils/random';
 import { DataSegment } from '../../src/data-segment';
 

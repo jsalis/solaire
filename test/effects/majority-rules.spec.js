@@ -1,5 +1,5 @@
 
-import { majorityRules } from '../../src/effects/majority-rules';
+import { majorityRules } from '../../src/effects';
 import { randomWithSeed } from '../../src/utils/random';
 import { DataSegment } from '../../src/data-segment';
 

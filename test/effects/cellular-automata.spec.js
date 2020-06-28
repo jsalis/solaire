@@ -1,5 +1,5 @@
 
-import { cellularAutomata } from '../../src/effects/cellular-automata';
+import { cellularAutomata } from '../../src/effects';
 import { randomWithSeed } from '../../src/utils/random';
 import { DataSegment } from '../../src/data-segment';
 
