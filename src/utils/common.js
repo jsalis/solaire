@@ -1,4 +1,3 @@
-
 /**
  * Determines whether a value is a function.
  *
@@ -6,7 +5,7 @@
  * @returns {Boolean}
  */
 export function isFunction(val) {
-	return typeof val === 'function';
+    return typeof val === "function";
 }
 
 /**
@@ -16,7 +15,7 @@ export function isFunction(val) {
  * @returns {Boolean}
  */
 export function isSymbol(val) {
-	return typeof val === 'symbol';
+    return typeof val === "symbol";
 }
 
 /**
@@ -26,7 +25,7 @@ export function isSymbol(val) {
  * @returns {Boolean}
  */
 export function isDefined(val) {
-	return val !== undefined;
+    return val !== undefined;
 }
 
 /**
@@ -36,7 +35,7 @@ export function isDefined(val) {
  * @return {Boolean}
  */
 export function isObject(val) {
-	return typeof val === 'object' && val !== null;
+    return typeof val === "object" && val !== null;
 }
 
 /**
@@ -46,7 +45,7 @@ export function isObject(val) {
  * @returns {Boolean}
  */
 export function isEven(val) {
-	return val % 2 === 0;
+    return val % 2 === 0;
 }
 
 /**
@@ -58,9 +57,10 @@ export function isEven(val) {
  * @returns {Number}
  */
 export function clamp(val, min, max) {
-	return min < max
-		? (val < min ? min : val > max ? max : val)
-		: (val < max ? max : val > min ? min : val);
+    if (min < max) {
+        return val < min ? min : val > max ? max : val;
+    }
+    return val < max ? max : val > min ? min : val;
 }
 
 /**
@@ -72,9 +72,10 @@ export function clamp(val, min, max) {
  * @returns {Number}
  */
 export function wrap(val, min, max) {
-	return min < max
-		? (((val - min) % (max + 1 - min)) + (max + 1 - min)) % (max + 1 - min) + min
-		: (((val - max) % (min + 1 - max)) + (min + 1 - max)) % (min + 1 - max) + max;
+    if (min < max) {
+        return ((((val - min) % (max + 1 - min)) + (max + 1 - min)) % (max + 1 - min)) + min;
+    }
+    return ((((val - max) % (min + 1 - max)) + (min + 1 - max)) % (min + 1 - max)) + max;
 }
 
 /**
@@ -84,11 +85,11 @@ export function wrap(val, min, max) {
  * @returns {Array}
  */
 export function deepEntries(obj) {
-	const entries = [];
-	Object.entries(obj).forEach(([x, dim]) => {
-		Object.entries(dim).forEach(([y, value]) => {
-			entries.push([x, y, value]);
-		});
-	});
-	return entries;
+    const entries = [];
+    Object.entries(obj).forEach(([x, dim]) => {
+        Object.entries(dim).forEach(([y, value]) => {
+            entries.push([x, y, value]);
+        });
+    });
+    return entries;
 }

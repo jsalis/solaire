@@ -1,7 +1,6 @@
+import seedRandom from "seedrandom/seedrandom";
 
-import seedRandom from 'seedrandom/seedrandom';
-
-import { isDefined } from './common';
+import { isDefined } from "./common";
 
 /**
  * Creates a pseudo-random number generator with a given seed.
@@ -10,12 +9,12 @@ import { isDefined } from './common';
  * @returns {Function}
  */
 export function randomWithSeed(seed) {
-	return seedRandom(seed, {
-		pass(random, seed) {
-			random.seed = seed;
-			return random;
-		}
-	});
+    return seedRandom(seed, {
+        pass(random, seed) {
+            random.seed = seed;
+            return random;
+        },
+    });
 }
 
 /**
@@ -25,15 +24,15 @@ export function randomWithSeed(seed) {
  * @returns {String}
  */
 export function generateSeed(length = 32) {
-	let random = seedRandom(null);
-	let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	let result = '';
+    let random = seedRandom(null);
+    let chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let result = "";
 
-	for (let i = 0; i < length; i++) {
-		result += chars[Math.floor(random() * chars.length)];
-	}
+    for (let i = 0; i < length; i++) {
+        result += chars[Math.floor(random() * chars.length)];
+    }
 
-	return result;
+    return result;
 }
 
 /**
@@ -44,18 +43,18 @@ export function generateSeed(length = 32) {
  * @returns {Function}
  */
 export function randomFrom(entries, random) {
-	let values = entries.map(el => isDefined(el.value) ? el.value : el);
-	let weights = entries.map(el => isDefined(el.weight) ? el.weight : 1);
-	let intervals = weights.reduce((array, val, i) => {
-		let prev = array[ i - 1 ] || 0;
-		array.push(val + prev);
-		return array;
-	}, []);
-	let sum = intervals[ intervals.length - 1 ];
+    let values = entries.map((el) => (isDefined(el.value) ? el.value : el));
+    let weights = entries.map((el) => (isDefined(el.weight) ? el.weight : 1));
+    let intervals = weights.reduce((array, val, i) => {
+        let prev = array[i - 1] || 0;
+        array.push(val + prev);
+        return array;
+    }, []);
+    let sum = intervals[intervals.length - 1];
 
-	return () => {
-		let r = random() * sum | 0;
-		let index = intervals.findIndex(int => r < int);
-		return values[ index ];
-	};
+    return () => {
+        let r = (random() * sum) | 0;
+        let index = intervals.findIndex((int) => r < int);
+        return values[index];
+    };
 }
