@@ -4,7 +4,7 @@ cache:
     - node_modules
 branches:
   only:
-    - master
+    - main
 node_js:
   - 8
 before_install:
