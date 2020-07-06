@@ -143,7 +143,7 @@ export const World = {
             serialize() {
                 let { bounds, regionSize } = config;
                 let initialData = deepEntries(data).reduce((result, [x, y, region]) => {
-                    result[x] = result[x] || {};
+                    result[x] = result[x] ?? {};
                     result[x][y] = {
                         type: region.type,
                         seed: region.seed,
@@ -195,7 +195,7 @@ function createDataObject({ initialData }) {
             mutations: state.mutations,
         });
 
-        result[x] = result[x] || {};
+        result[x] = result[x] ?? {};
         result[x][y] = region;
         return result;
     }, {});
@@ -243,13 +243,13 @@ function setRegion(data, position, options, { bounds, regions, chooseRegion, see
     let pos = applyBounds(position, bounds);
 
     if (pos) {
-        data[pos.x] = data[pos.x] || {};
+        data[pos.x] = data[pos.x] ?? {};
 
         if (!data[pos.x][pos.y]) {
             let regionTypes = Object.keys(regions);
             let random = randomWithSeed([seed, pos]);
             let type =
-                options.type ||
+                options.type ??
                 chooseRegion({
                     position: pos,
                     regionTypes: regionTypes,

@@ -15,7 +15,7 @@ export const DataSegment = {
      */
     create({ size, random, regions, position, bounds, mutations }) {
         let data = dataWithSize(size);
-        let muta = mutations || {};
+        let muta = mutations ?? {};
 
         return {
             get(x, y) {
