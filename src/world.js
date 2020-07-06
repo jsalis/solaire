@@ -4,7 +4,6 @@ import * as vec2 from "./utils/vec2";
 import * as effects from "./effects";
 import { clamp, wrap, isFunction, isObject, deepEntries } from "./utils/common";
 import { randomWithSeed, randomFrom } from "./utils/random";
-import { Direction } from "./direction";
 import { DataSegment } from "./data-segment";
 import { Region } from "./region";
 import { RegionGenerator } from "./region-generator";
@@ -110,9 +109,16 @@ export const World = {
                     }
                 }
 
-                let regionGenerator = RegionGenerator.create({ regionTypes, regions, seed });
-                config.generate({ regions: regionGenerator, effects });
-                mutate(data, position, config);
+                config.generate({
+                    regions: RegionGenerator.create({ regionTypes, regions, seed }),
+                    effects,
+                });
+
+                for (let x = opt.x.min; x <= opt.x.max; x++) {
+                    for (let y = opt.y.min; y <= opt.y.max; y++) {
+                        mutate(data, { x, y }, config);
+                    }
+                }
             },
 
             move(...args) {
@@ -299,16 +305,13 @@ function initialize(data, position, { bounds, regions, regionSize, seed }) {
 }
 
 function mutate(data, position, { bounds }) {
-    Object.values(Direction.NEIGHBORS).forEach((dir) => {
-        // TODO use generate area
-        let pos = applyBounds(vec2.add(position, dir), bounds);
-        let region = pos && data[pos.x]?.[pos.y];
+    let pos = applyBounds(position, bounds);
+    let region = pos && data[pos.x]?.[pos.y];
 
-        if (pos && region) {
-            Object.entries(region.mutations).forEach(([key, val]) => {
-                let [x, y] = key.split(",");
-                region.data.set(x, y, val);
-            });
-        }
-    });
+    if (pos && region) {
+        Object.entries(region.mutations).forEach(([key, val]) => {
+            let [x, y] = key.split(",");
+            region.data.set(x, y, val);
+        });
+    }
 }
