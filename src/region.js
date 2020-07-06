@@ -7,9 +7,9 @@ export const Region = {
      */
     create(config) {
         return {
+            position: config.position,
             type: config.type,
             seed: config.seed ?? JSON.stringify(config.position),
-            position: config.position,
             mutations: config.mutations ?? {},
             data: [],
         };

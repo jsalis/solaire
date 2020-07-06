@@ -265,9 +265,10 @@ function setRegion(data, position, options, { bounds, regions, chooseRegion, see
             }
 
             data[pos.x][pos.y] = Region.create({
+                position: pos,
                 type: type,
                 seed: options.seed,
-                position: pos,
+                mutations: options.mutations,
             });
         }
     }
