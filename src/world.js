@@ -1,8 +1,6 @@
-import merge from "merge";
-
 import * as vec2 from "./utils/vec2";
 import * as effects from "./effects";
-import { clamp, wrap, isFunction, isObject, deepEntries } from "./utils/common";
+import { clamp, wrap, isFunction, isObject, deepEntries, deepAssign } from "./utils/common";
 import { randomWithSeed, randomFrom } from "./utils/random";
 import { DataSegment } from "./data-segment";
 import { Region } from "./region";
@@ -36,7 +34,7 @@ export const World = {
      * @returns {Object}
      */
     create(config) {
-        config = merge.recursive(true, DEFAULT_CONFIG, config);
+        config = deepAssign({}, DEFAULT_CONFIG, config);
         sanitize(config);
 
         let { seed } = randomWithSeed(config.seed);

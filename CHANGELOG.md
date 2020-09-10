@@ -12,10 +12,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 -   allow initial mutations to be passed on init ([479b835](https://github.com/jsalis/solaire/commit/479b835))
 
-### Tests
-
--   fix test case ([42bdedd](https://github.com/jsalis/solaire/commit/42bdedd))
-
 ## [0.6.0](https://github.com/jsalis/solaire/compare/v0.5.0...v0.6.0) (2020-06-28)
 
 ### Features

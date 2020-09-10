@@ -93,3 +93,28 @@ export function deepEntries(obj) {
     });
     return entries;
 }
+
+/**
+ * Deep assigns a target object by copying the values of all enumerable own properties from
+ * one or more source objects to the target object.
+ *
+ * @param   {Object}    target
+ * @param   {...Object} [sources]
+ * @returns {Object}
+ */
+export function deepAssign(target, ...sources) {
+    const output = target || {};
+    sources.forEach((obj) => {
+        const source = obj || {};
+        Object.keys(source).forEach((key) => {
+            const value = source[key];
+            if (isObject(value) && isDefined(output[key])) {
+                const existingValue = isObject(output[key]) ? output[key] : {};
+                output[key] = deepAssign({}, existingValue, value);
+            } else {
+                output[key] = value;
+            }
+        });
+    });
+    return output;
+}
