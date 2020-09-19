@@ -95,14 +95,14 @@ export function deepEntries(obj) {
 }
 
 /**
- * Deep assigns a target object by copying the values of all enumerable own properties from
+ * Deep merges a target object by copying the values of all enumerable own properties from
  * one or more source objects to the target object.
  *
  * @param   {Object}    target
  * @param   {...Object} [sources]
  * @returns {Object}
  */
-export function deepAssign(target, ...sources) {
+export function merge(target, ...sources) {
     const output = target || {};
     sources.forEach((obj) => {
         const source = obj || {};
@@ -110,7 +110,7 @@ export function deepAssign(target, ...sources) {
             const value = source[key];
             if (isObject(value) && isDefined(output[key])) {
                 const existingValue = isObject(output[key]) ? output[key] : {};
-                output[key] = deepAssign({}, existingValue, value);
+                output[key] = merge({}, existingValue, value);
             } else {
                 output[key] = value;
             }
