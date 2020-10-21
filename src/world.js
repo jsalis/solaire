@@ -1,6 +1,6 @@
 import * as vec2 from "./utils/vec2";
 import * as effects from "./effects";
-import { clamp, wrap, isFunction, isObject, merge, deepEntries } from "./utils/common";
+import { clamp, wrap, isFunction, isObjectLike, merge, deepEntries } from "./utils/common";
 import { randomWithSeed, randomFrom } from "./utils/random";
 import { DataSegment } from "./data-segment";
 import { Region } from "./region";
@@ -233,12 +233,12 @@ function parseOptions(opt = {}, position) {
     return {
         ...opt,
         x: {
-            min: isObject(opt.x) ? Number(opt.x?.min ?? def.x.min) : Number(opt.x ?? def.x.min),
-            max: isObject(opt.x) ? Number(opt.x?.max ?? def.x.max) : Number(opt.x ?? def.x.max),
+            min: isObjectLike(opt.x) ? Number(opt.x?.min ?? def.x.min) : Number(opt.x ?? def.x.min),
+            max: isObjectLike(opt.x) ? Number(opt.x?.max ?? def.x.max) : Number(opt.x ?? def.x.max),
         },
         y: {
-            min: isObject(opt.y) ? Number(opt.y?.min ?? def.y.min) : Number(opt.y ?? def.y.min),
-            max: isObject(opt.y) ? Number(opt.y?.max ?? def.y.max) : Number(opt.y ?? def.y.max),
+            min: isObjectLike(opt.y) ? Number(opt.y?.min ?? def.y.min) : Number(opt.y ?? def.y.min),
+            max: isObjectLike(opt.y) ? Number(opt.y?.max ?? def.y.max) : Number(opt.y ?? def.y.max),
         },
     };
 }

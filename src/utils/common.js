@@ -29,13 +29,23 @@ export function isDefined(val) {
 }
 
 /**
- * Returns whether a value is an object.
+ * Returns whether a value is an object and not null.
  *
  * @param  {*} val
  * @return {Boolean}
  */
-export function isObject(val) {
+export function isObjectLike(val) {
     return typeof val === "object" && val !== null;
+}
+
+/**
+ * Returns whether a value is a plain object.
+ *
+ * @param  {*} val
+ * @return {Boolean}
+ */
+export function isPlainObject(val) {
+    return isObjectLike(val) && Object.prototype.toString.call(val) === "[object Object]";
 }
 
 /**
@@ -108,8 +118,8 @@ export function merge(target, ...sources) {
         const source = obj || {};
         Object.keys(source).forEach((key) => {
             const value = source[key];
-            if (isObject(value) && isDefined(output[key])) {
-                const existingValue = isObject(output[key]) ? output[key] : {};
+            if (isPlainObject(value) && isDefined(output[key])) {
+                const existingValue = isPlainObject(output[key]) ? output[key] : {};
                 output[key] = merge({}, existingValue, value);
             } else {
                 output[key] = value;
