@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/jsalis/solaire/compare/v0.7.0...v0.8.0) (2020-12-21)
+
+### Bug Fixes
+
+-   potential issue with arrays in the config ([11b2b6e](https://github.com/jsalis/solaire/commit/11b2b6e))
+
+### Build System
+
+-   replace merge dependency ([34d55d4](https://github.com/jsalis/solaire/commit/34d55d4))
+
+### Features
+
+-   export function randomWithSeed ([68b644e](https://github.com/jsalis/solaire/commit/68b644e))
+
 ## [0.7.0](https://github.com/jsalis/solaire/compare/v0.6.0...v0.7.0) (2020-07-06)
 
 ### Bug Fixes
